@@ -1,0 +1,31 @@
+object Form1: TForm1
+  Left = 304
+  Height = 300
+  Top = 250
+  Width = 500
+  Caption = 'Form1'
+  ClientHeight = 300
+  ClientWidth = 500
+  DesignTimePPI = 120
+  LCLVersion = '3.0.0.1'
+  object TrackBarGain: TTrackBar
+    Left = 50
+    Height = 31
+    Top = 150
+    Width = 400
+    Frequency = 1000
+    Max = 10000
+    OnChange = TrackBarGainChange
+    Position = 0
+    OnMouseDown = TrackBarGainMouseDown
+    OnMouseUp = TrackBarGainMouseUp
+    TabOrder = 0
+  end
+  object LabelGain: TLabel
+    Left = 60
+    Height = 20
+    Top = 100
+    Width = 71
+    Caption = 'LabelGain'
+  end
+end
