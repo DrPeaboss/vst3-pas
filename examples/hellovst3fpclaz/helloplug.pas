@@ -268,7 +268,7 @@ end;
 function THelloController.GetParamNormalized(id:TParamID):TParamValue; winapi;
 begin
   case id of
-    100: Result:=FParam1;
+    100: Result:=FParam1/1.95;
     else Result:=0;
   end;
 end;
@@ -279,7 +279,7 @@ begin
     Exit(kResultFalse);
   case id of
     100: begin
-      FParam1:=value;
+      FParam1:=value*1.95;
       FUpdateGUI.UpdateGUI(id,value);
     end;
     else Exit(kResultFalse);
