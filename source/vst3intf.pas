@@ -225,7 +225,6 @@ const
 
 type
   // Base class for streams.
-  // ingroup pluginBase
   // read/write binary data from/to stream
   // get/set stream read-write position (read and write position is the same)
   IBStream = interface(FUnknown)
@@ -251,7 +250,6 @@ type
   end;
 
   // Stream with a size.
-  // ingroup pluginBase
   // [extends IBStream] when stream type supports it (like file and memory stream)
   ISizeableStream = interface(FUnknown)
     ['{04F9549E-E02F-4E6E-87E8-6A8747F4E17F}']
@@ -1570,6 +1568,80 @@ type
     function RequestBusActivation(Typ:TMediaType; dir:TBusDirection; index:Int32; state:TBool):tresult; winapi;
   end;
 
+const
+  kIsSeparator  = 1 shl 0; // Item is a separator
+  kIsDisabled   = 1 shl 1; // Item is disabled
+  kIsChecked    = 1 shl 2; // Item is checked
+  kIsGroupStart = 1 shl 3 or kIsDisabled;  // Item is a group start (like sub folder)
+  kIsGroupEnd   = 1 shl 4 or kIsSeparator; // Item is a group end
+
+type
+  // IContextMenuItem is an entry element of the context menu.
+  IContextMenuItem = record
+    Name:TString128; // Name of the item
+    Tag:Int32;       // Identifier tag of the item
+    Flags:Int32;     // Flags of the item
+  end;
+  TContextMenuItem = IContextMenuItem;
+
+  IContextMenuTarget = interface;
+  PIContextMenuTarget = ^IContextMenuTarget;
+
+  // Context Menu interface: Vst::IContextMenu
+  // - [host imp]
+  // - [create with IComponentHandler3::createContextMenu(..)]
+  // - [released: 3.5.0]
+  // - [optional]
+  // A context menu is composed of Item (entry). A Item is defined by a name, a tag, a flag
+  // and a associated target (called when this item will be selected/executed).
+  // With IContextMenu the plug-in can retrieve a Item, add a Item, remove a Item and pop-up the menu.
+  IContextMenu = interface(FUnknown)
+    ['{2E93C863-0C9C-4588-97DB-ECF5AD17817D}']
+    // Gets the number of menu items.
+    function GetItemCount:Int32; winapi;
+    // Gets a menu item and its target (target could be not assigned).
+    function GetItem(Index:Int32; var item:TContextMenuItem; target:PIContextMenuTarget):tresult; winapi;
+    // Adds a menu item and its target.
+    function AddItem(const item:TContextMenuItem; target:IContextMenuTarget):tresult; winapi;
+    // Removes a menu item.
+    function RemoveItem(const item:TContextMenuItem; target:IContextMenuTarget):tresult; winapi;
+    // Pop-ups the menu. Coordinates are relative to the top-left position of the plug-ins view.
+    function Popup(x,y:UCoord):tresult; winapi;
+  end;
+
+  // Context Menu Item Target interface: Vst::IContextMenuTarget
+  // - [host imp]
+  // - [plug imp]
+  // - [released: 3.5.0]
+  // - [optional]
+  // A receiver of a menu item should implement this interface, which will be called after the user has selected this menu item.
+  IContextMenuTarget = interface(FUnknown)
+    ['{3CDF2E75-85D3-4144-BF86-D36BD7C48940}']
+    // Called when an menu item was executed.
+    function ExecuteMenuItem(tag:Int32):tresult; winapi;
+  end;
+
+  // Extended host callback interface Vst::IComponentHandler3 for an edit controller.
+  // - [host imp]
+  // - [extends IComponentHandler]
+  // - [released: 3.5.0]
+  // - [optional]
+  // A plug-in can ask the host to create a context menu for a given exported parameter ID or a generic context menu.
+  // The host may pre-fill this context menu with specific items regarding the parameter ID like "Show automation for parameter",
+  // "MIDI learn" etc...
+  // The plug-in can use the context menu in two ways :
+  // - add its own items to the menu via the IContextMenu interface and call IContextMenu::popup(..) to create the pop-up. See the IContextMenuExample.
+  // - extract the host menu items and add them to a context menu created by the plug-in.
+  // Note: You can and should use this even if you do not add your own items to the menu as this is considered to be a big user value.
+  IComponentHandler3 = interface(FUnknown)
+    ['{69F11617-D26B-400D-A4B6-B9647B6EBBAB}']
+    // Creates a host context menu for a plug-in:
+		// - If paramID is zero, the host may create a generic context menu.
+		// - The IPlugView object must be valid.
+		// - The return IContextMenu object needs to be released afterwards by the plug-in.
+    function CreateContextMenu(PlugView:IPlugView; ParamID:PParamID):IContextMenu {$ifdef DCC}unsafe{$endif}; winapi;
+  end;
+
   // For IProgress
   TProgressType = UInt32;
 const
@@ -1748,7 +1820,6 @@ type
   // well as automation. They are transmitted as a list of queues (IParamValueQueue)
   // containing only queues for parameters that actually did change.
   IParameterChanges = interface(FUnknown)
-    // 0xA4779663, 0x0BB64A56, 0xB44384A8, 0x466FEB9D
     ['{A4779663-0BB6-4A56-B443-84A8466FEB9D}']
     // Returns count of Parameter changes in the list.
     function GetParameterCount:Int32; winapi;
@@ -1834,7 +1905,6 @@ type
   // - Each unit can reference one program list - this reference must not change.
   // - Each unit, using a program list, references one program of the list.
   IUnitInfo = interface(FUnknown)
-    // 0x3D4BD6B5, 0x913A4FD2, 0xA886E768, 0xA5EB92C1
     ['{3D4BD6B5-913A-4FD2-A886-E768A5EB92C1}']
     // Returns the flat count of units.
     function GetUnitCount:Int32; winapi;
@@ -2582,8 +2652,7 @@ type
 
 type
   // Physical UI Type
-  // PhysicalUITypeID describes the type of Physical UI (PUI) which could be associated to a note
-  // expression.
+  // PhysicalUITypeID describes the type of Physical UI (PUI) which could be associated to a note expression.
   // see PhysicalUIMap
   TPhysicalUITypeID = UInt32;
 
@@ -2682,33 +2751,6 @@ type
     Name:   TName; // Representation (remote) Name (eg. "O2").
     Version:TName; // Version of this "Remote" (eg. "1.0").
     Host:   TName; // Optional: used if the representation is for a given host only (eg. "Nuendo").
-    //procedure Init;overload;
-    //procedure Init(_vendor:AnsiString;_name:AnsiString='';_version:AnsiString='';_host:AnsiString='');overload;
-  end;
-
-  // Layer Types used in a VST XML Representation
-  TLayerType = record
-  public const
-    kKnob = 0;        // a knob (encoder or not)
-    kPressedKnob = 1; // a knob which is used by pressing and turning
-    kSwitchKnob = 2;  // knob could be pressed to simulate a switch
-    kSwitch = 3;      // a "on/off" button
-    kLED = 4;         // LED like VU-meter or display around a knob
-    kLink = 5;        // indicates that this layer is a folder linked to an another INode (page)
-    kDisplay = 6;     // only for text display (not really a control)
-    kFader = 7;       // a fader
-    kEndOfLayerType = 8;
-    // FIDString variant of the LayerType
-    LayerTypeFIDString:array[0..7] of AnsiString=(
-      'knob',
-      'pressedKnob',
-      'switchKnob',
-      'switch',
-      'LED',
-      'link',
-      'display',
-      'fader'
-    );
   end;
 
   // Extended plug-in interface IEditController for a component: Vst::IXmlRepresentationController
@@ -3136,8 +3178,6 @@ const
   sIID_IVst3ToAUWrapper = '{A3B8C6C5-C095-4688-B091-6F0BB697AA44}';
   sIID_IVst3ToAAXWrapper = '{6D319DC6-60C5-6242-B32C-951B93BEF4C6}';
   sIID_IVst3WrapperMPESupport = '{44149067-42CF-4BF9-8800-B750F7359FE3}';
-  sIID_ITestPlugProvider = '{86BE70EE-4E99-430F-978F-1E6ED68FB5BA}';
-  sIID_ITestPlugProvider2 = '{C7C75364-7B83-43AC-A449-5B0A3E5A46C7}';
   sIID_IAutomationState = '{B4E8287F-1BB3-46AA-83A4-666768937BAB}';
   sIID_IMidiLearn = '{6B2449CC-4197-40B5-AB3C-79DAC5FE5C86}';
   sIID_IParameterFunctionName = '{6D21E1DC-9119-9D4B-A2A0-2FEF6C1AE55C}';
@@ -3208,8 +3248,6 @@ const
   IID_IVst3ToAUWrapper:TGuid = sIID_IVst3ToAUWrapper;
   IID_IVst3ToAAXWrapper:TGuid = sIID_IVst3ToAAXWrapper;
   IID_IVst3WrapperMPESupport:TGuid = sIID_IVst3WrapperMPESupport;
-  IID_ITestPlugProvider:TGuid = sIID_ITestPlugProvider;
-  IID_ITestPlugProvider2:TGuid = sIID_ITestPlugProvider2;
   IID_IAutomationState:TGuid = sIID_IAutomationState;
   IID_IMidiLearn:TGuid = sIID_IMidiLearn;
   IID_IParameterFunctionName:TGuid = sIID_IParameterFunctionName;
@@ -3703,6 +3741,31 @@ const
   QUICK_CONTROL_8_CELLS = 'Quick Controls 8 Cells';
 
 type
+  // Layer Types used in a VST XML Representation
+  TLayerType = record
+  public const
+    kKnob = 0;        // a knob (encoder or not)
+    kPressedKnob = 1; // a knob which is used by pressing and turning
+    kSwitchKnob = 2;  // knob could be pressed to simulate a switch
+    kSwitch = 3;      // a "on/off" button
+    kLED = 4;         // LED like VU-meter or display around a knob
+    kLink = 5;        // indicates that this layer is a folder linked to an another INode (page)
+    kDisplay = 6;     // only for text display (not really a control)
+    kFader = 7;       // a fader
+    kEndOfLayerType = 8;
+    // FIDString variant of the LayerType
+    LayerTypeFIDString:array[0..7] of AnsiString=(
+      'knob',
+      'pressedKnob',
+      'switchKnob',
+      'switch',
+      'LED',
+      'link',
+      'display',
+      'fader'
+    );
+  end;
+
   // Curve Types used in a VST XML Representation
   TCurveType = record
   public const
@@ -3779,6 +3842,7 @@ type
     kHideableFlag = 'hideable';
   end;
 
+  // Used for IParameterFunctionName
   TFunctionNameType = record
   public const
     kCompGainReduction = 'Comp:GainReduction';
