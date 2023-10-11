@@ -2,7 +2,7 @@
   The Object Pascal(FPC and Delphi) bindings of VST 3 API.
   Original API is at <https://github.com/steinbergmedia/vst3_pluginterfaces>
 
-  Current API version is 3.7.8, released on May 16, 2023.
+  Current API version is 3.7.9 (2023/10/09).
 
   This unit is converted from part of VST 3 API,
   constains the main constants, data structures and interfaces.
@@ -24,6 +24,7 @@ unit VST3Intf;
 {$ifdef FPC}
   {$mode delphi}
   {$Interfaces CORBA} // Use CORBA interface in FPC
+  {$WARN 3031 off : Values in enumeration types have to be ascending}
 {$endif}
 
 interface
@@ -40,17 +41,18 @@ type
 { VST Versions }
 
 const
-  kVstVersionString = 'VST 3.7.8'; // SDK version for TPClassInfo2
+  kVstVersionString = 'VST 3.7.9'; // SDK version for TPClassInfo2
 
   kVstVersionMajor  = 3;
   kVstVersionMinor  = 7;
-  kVstVersionSub    = 8;
+  kVstVersionSub    = 9;
 
   VST_VERSION = kVstVersionMajor shl 16 or kVstVersionMinor shl 8 or kVstVersionSub;
 
   // Versions History which allows to write such code:
   // {$IF VST_VERSION >= VST_3_6_5_VERSION}
 
+  VST_3_7_9_VERSION  = $030709;
   VST_3_7_8_VERSION  = $030708;
   VST_3_7_7_VERSION  = $030707;
   VST_3_7_6_VERSION  = $030706;
@@ -80,6 +82,7 @@ const
   SDKVersionMinor   = kVstVersionMinor;
   SDKVersionSub     = kVstVersionSub;
   SDKVersion        = VST_VERSION;
+  SDKVersion_3_7_9  = VST_3_7_9_VERSION;
   SDKVersion_3_7_8  = VST_3_7_8_VERSION;
   SDKVersion_3_7_7  = VST_3_7_7_VERSION;
   SDKVersion_3_7_6  = VST_3_7_6_VERSION;
@@ -440,8 +443,8 @@ type
   end;
 
   // Interface to a string of variable size and encoding.
-  //- [host imp] or [plug imp]
-  //- [released: ]
+  // - [host imp] or [plug imp]
+  // - [released: ]
   IString = interface(FUnknown)
     ['{F99DB7A3-0FC1-4821-800B-0CF98E348EDF}']
     // Assign ASCII string
@@ -657,6 +660,7 @@ type
     kSpeakerLc,    // 1 << 6  Left of Center (Lc) - Front Left Center
     kSpeakerRc,    // 1 << 7  Right of Center (Rc) - Front Right Center
     kSpeakerS,     // 1 << 8  Surround (S)
+    kSpeakerCs = kSpeakerS, // Center of Surround (Cs) - Back Center - Surround (S)
     kSpeakerSl,    // 1 << 9  Side Left (Sl)
     kSpeakerSr,    // 1 << 10 Side Right (Sr)
     kSpeakerTc,    // 1 << 11 Top Center Over-head, Top Middle (Tc)
@@ -707,6 +711,8 @@ type
     kSpeakerACN22, // 1 << 56 Ambisonic ACN 22
     kSpeakerACN23, // 1 << 57 Ambisonic ACN 23
     kSpeakerACN24, // 1 << 58 Ambisonic ACN 24
+    kSpeakerLw,    // 1 << 59 Left Wide (Lw)
+    kSpeakerRw,    // 1 << 60 Right Wide (Rw)
     kSpeakerMax=63 // max number for align
   );
   TSpeakerArrangement = set of TSpeaker;
@@ -714,10 +720,10 @@ type
 
 const
   kNoParamID = TParamID($FFFFFFFF); // default for uninitialized parameter ID
-  kSpeakerCs = kSpeakerS; // Center of Surround (Cs) - Back Center - Surround (S)
 
   kMono           = [kSpeakerM]; // M
   kStereo         = [kSpeakerL,kSpeakerR]; // L R
+  kStereoWide     = [kSpeakerLw,kSpeakerRw]; // Lw Rw
   kStereoSurround = [kSpeakerLs,kSpeakerRs]; // Ls Rs
   kStereoCenter   = [kSpeakerLc,kSpeakerRc]; // Lc Rc
   kStereoSide     = [kSpeakerSl,kSpeakerSr]; // Sl Sr
@@ -804,10 +810,162 @@ const
   // Seventh-Order with Ambisonic Channel Number (ACN) ordering and SN3D normalization (64 channels)
   kAmbi7thOrderACN = $FFFFFFFFFFFFFFFF;
 
+  // 3D formats
+
+  // L R Ls Rs Tfl Tfr Trl Trr    4.0.4
+  k80Cube = [kSpeakerL,kSpeakerR,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  k40_4   = k80Cube;
+  // L R C Lfe Ls Rs Cs Tc        6.1.1
+  k71CineTopCenter = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerCs,kSpeakerTc];
+  // L R C Lfe Ls Rs Cs Tfc       6.1.1
+  k71CineCenterHigh = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerCs,kSpeakerTfc];
+  // L R C Ls Rs Tfl Tfr          5.0.2 (ITU 2+5+0.0 Sound System C)
+  k70CineFrontHigh = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr];
+  k70MPEG3D = k70CineFrontHigh;
+  k50_2 = k70CineFrontHigh;
+  // L R C Lfe Ls Rs Tfl Tfr      5.1.2 (ITU 2+5+0.1 Sound System C)
+  k71CineFrontHigh = k70CineFrontHigh+[kSpeakerLfe];
+  k71MPEG3D = k71CineFrontHigh;
+  k51_2 = k71CineFrontHigh;
+  // L R C Ls Rs Tsl Tsr          5.0.2 (Side)
+  k70CineSideHigh = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTsl,kSpeakerTsr];
+  k50_2_TS = k70CineSideHigh;
+  // L R C Lfe Ls Rs Tsl Tsr      5.1.2 (Side)
+  k71CineSideHigh = k70CineSideHigh + [kSpeakerLfe];
+  k51_2_TS = k71CineSideHigh;
+  // L R Lfe Ls Rs Tfl Tfc Tfr Bfc    4.1.3.1
+  k81MPEG3D = [kSpeakerL,kSpeakerR,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerBfc];
+  k41_4_1 = k81MPEG3D;
+
+  // L R C Ls Rs Tfl Tfr Trl Trr        5.0.4 (ITU 4+5+0.0 Sound System D)
+  k90 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  k50_4 = k90;
+  // L R C Lfe Ls Rs Tfl Tfr Trl Trr    5.1.4
+  k91 = k90 + [kSpeakerLfe];
+  k51_4 = k91;
+  // L R C Ls Rs Tfl Tfr Trl Trr Bfc        5.0.4.1 (ITU 4+5+1.0 Sound System E)
+  k50_4_1 = k50_4 + [kSpeakerBfc];
+  // L R C Lfe Ls Rs Tfl Tfr Trl Trr Bfc    5.1.4.1 (ITU 4+5+1.1 Sound System E)
+  k51_4_1 = k50_4_1 + [kSpeakerLfe];
+
+  // L R C Ls Rs Sl Sr Tsl Tsr        7.0.2
+  k70_2 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTsl,kSpeakerTsr];
+  // L R C Lfe Ls Rs Sl Sr Tsl Tsr    7.1.2
+  k71_2 = k70_2 + [kSpeakerLfe];
+  k91Atmos = k71_2; // 9.1 Dolby Atmos (3D)
+  // L R C Ls Rs Sl Sr Tfl Tfr Trc    7.0.3 (ITU 3+7+0.0 Sound System F)
+  k70_3 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrc];
+  // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trc Lfe2    7.2.3 (ITU 3+7+0.2 Sound System F)
+  k72_3 = k70_3 + [kSpeakerLfe,kSpeakerLfe2];
+  // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr         7.0.4 (ITU 4+7+0.0 Sound System J)
+  k70_4 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trl Trr     7.1.4 (ITU 4+7+0.1 Sound System J)
+  k71_4 = k70_4 + [kSpeakerLfe];
+  k111MPEG3D = k71_4;
+  // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr Tsl Tsr        7.0.6
+  k70_6 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTfl,
+    kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerTsl,kSpeakerTsr];
+  // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trl Trr Tsl Tsr    7.1.6
+  k71_6 = k70_6 + [kSpeakerLfe];
+
+  // L R C Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr                9.0.4 (ITU 4+9+0.0 Sound System G)
+  k90_4 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,kSpeakerSl,
+    kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  // L R C Lfe Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr            9.1.4 (ITU 4+9+0.1 Sound System G)
+  k91_4 = k90_4 + [kSpeakerLfe];
+  // L R C Lfe Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr Tsl Tsr    9.0.6
+  k90_6 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,kSpeakerSl,
+    kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerTsl,kSpeakerTsr];
+  // L R C Lfe Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr Tsl Tsr    9.1.6
+  k91_6 = k90_6 + [kSpeakerLfe];
+
+  // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr Lw Rw                9.0.4 (Dolby)
+  k90_4_W = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLw,kSpeakerRw,kSpeakerSl,kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trl Trr Lw Rw            9.1.4 (Dolby)
+  k91_4_W = k90_4_W + [kSpeakerLfe];
+  // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr Tsl Tsr Lw Rw        9.0.6 (Dolby)
+  k90_6_W = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLw,kSpeakerRw,kSpeakerSl,kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerTsl,kSpeakerTsr];
+  // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trl Trr Tsl Tsr Lw Rw    9.1.6 (Dolby)
+  k91_6_W = k90_6_W + [kSpeakerLfe];
+
+  // L R C Ls Rs Tc Tfl Tfr Trl Trr              5.0.5 (10.0 Auro-3D)
+  k100 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTc,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  k50_5 = k100;
+  // L R C Lfe Ls Rs Tc Tfl Tfr Trl Trr          5.1.5 (10.1 Auro-3D)
+  k101 = k100 + [kSpeakerLfe];
+  k101MPEG3D = k101;
+  k51_5 = k101;
+  // L R C Lfe Ls Rs Tfl Tfc Tfr Trl Trr Lfe2    5.2.5
+  k102 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfc,
+    kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerLfe2];
+  k52_5 = k102;
+  // L R C Ls Rs Tc Tfl Tfc Tfr Trl Trr          5.0.6 (11.0 Auro-3D)
+  k110 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTc,kSpeakerTfl,kSpeakerTfc,
+    kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  k50_6 = k110;
+  // L R C Lfe Ls Rs Tc Tfl Tfc Tfr Trl Trr      5.1.6 (11.1 Auro-3D)
+  k111 = k110 + [kSpeakerLfe];
+  k51_6 = k111;
+
+  // L R C Lfe Ls Rs Lc Rc Tfl Tfc Tfr Trl Trr Lfe2    7.2.5
+  k122 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,
+    kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerLfe2];
+  k72_5 = k122;
+  // L R C Ls Rs Sl Sr Tc Tfl Tfc Tfr Trl Trr          7.0.6 (13.0 Auro-3D)
+  k130 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTc,
+    kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  // L R C Lfe Ls Rs Sl Sr Tc Tfl Tfc Tfr Trl Trr      7.1.6 (13.1 Auro-3D)
+  k131 = k130 + [kSpeakerLfe];
+
+  // L R Ls Rs Sl Sr Tfl Tfr Trl Trr Bfl Bfr Brl Brr   6.0.4.4
+  k140 = [kSpeakerL,kSpeakerR,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTfl,kSpeakerTfr,
+    kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr,kSpeakerBrl,kSpeakerBrr];
+  k60_4_4 = k140;
+
+  // L R C Ls Rs Lc Rc Cs Sl Sr Tc Tfl Tfc Tfr Trl Trc Trr Tsl Tsr Bfl Bfc Bfr    10.0.9.3 (ITU 9+10+3.0 Sound System H)
+  k220 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,kSpeakerCs,
+    kSpeakerSl,kSpeakerSr,kSpeakerTc,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,kSpeakerTrc,
+    kSpeakerTrr,kSpeakerTsl,kSpeakerTsr,kSpeakerBfl,kSpeakerBfc,kSpeakerBfr];
+  k100_9_3 = k220;
+  // L R C Lfe Ls Rs Lc Rc Cs Sl Sr Tc Tfl Tfc Tfr Trl Trc Trr Lfe2 Tsl Tsr Bfl Bfc Bfr    10.2.9.3 (ITU 9+10+3.2 Sound System H)
+  k222 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,
+    kSpeakerCs,kSpeakerSl,kSpeakerSr,kSpeakerTc,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,
+    kSpeakerTrc,kSpeakerTrr,kSpeakerLfe2,kSpeakerTsl,kSpeakerTsr,kSpeakerBfl,kSpeakerBfc,kSpeakerBfr];
+  k102_9_3 = k222;
+
+  // L R C Ls Rs Tfl Tfc Tfr Trl Trr Bfl Bfc Bfr        5.0.5.3
+  k50_5_3 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,
+    kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfc,kSpeakerBfr];
+  // L R C Lfe Ls Rs Tfl Tfc Tfr Trl Trr Bfl Bfc Bfr    5.1.5.3
+  k51_5_3 = k50_5_3 + [kSpeakerLfe];
+  // L R C Ls Rs Tsl Tsr Bfl Bfr                        5.0.2.2
+  k50_2_2 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTsl,kSpeakerTsr,kSpeakerBfl,kSpeakerBfr];
+  // L R C Ls Rs Tfl Tfr Trl Trr Bfl Bfr                5.0.4.2
+  k50_4_2 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr];
+  // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr Bfl Bfr          7.0.4.2
+  k70_4_2 = k50_4_2 + [kSpeakerSl,kSpeakerSr];
+
+  // L R C Ls Rs Tfl Tfc Tfr Trl Trr                5.0.5.0 (Sony 360RA)
+  k50_5_Sony = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  // C Sl Sr Cs Tsl Tsr Bsl Bsr                     4.0.2.2 (Sony 360RA)
+  k40_2_2 = [kSpeakerC,kSpeakerSl,kSpeakerSr,kSpeakerCs,kSpeakerTsl,kSpeakerTsr,kSpeakerBsl,kSpeakerBsr];
+  // L R Ls Rs Tfl Tfr Trl Trr Bfl Bfr              4.0.4.2 (Sony 360RA)
+  k40_4_2 = [kSpeakerL,kSpeakerR,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr];
+  // L R C Ls Rs Tfl Tfc Tfr Bfl Bfr                5.0.3.2 (Sony 360RA)
+  k50_3_2 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerBfl,kSpeakerBfr];
+  // L R C Tfl Tfc Tfr Trl Trr Bfl Bfr              3.0.5.2 (Sony 360RA)
+  k30_5_2 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr];
+  // L R Ls Rs Tfl Tfr Trl Trr Bfl Bfr Brl Brr      4.0.4.4 (Sony 360RA)
+  k40_4_4 = [kSpeakerL,kSpeakerR,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr,kSpeakerBrl,kSpeakerBrr];
+  // L R C Ls Rs Tfl Tfr Trl Trr Bfl Bfr Brl Brr    5.0.4.4 (Sony 360RA)
+  k50_4_4 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr,kSpeakerBrl,kSpeakerBrr];
+
+
   // Speaker Arrangement String Representation.
 
   kStringMono       = 'Mono';
   kStringStereo     = 'Stereo';
+  kStringStereoWide = 'Stereo (Lw Rw)';
   kStringStereoR    = 'Stereo (Ls Rs)';
   kStringStereoC    = 'Stereo (Lc Rc)';
   kStringStereoSide = 'Stereo (Sl Sr)';
@@ -870,10 +1028,14 @@ const
   kString71_4 = '7.1.4';
   kString70_6 = '7.0.6';
   kString71_6 = '7.1.6';
-  kString90_4 = '9.0.4';
-  kString91_4 = '9.1.4';
-  kString90_6 = '9.0.6';
-  kString91_6 = '9.1.6';
+  kString90_4 = '9.0.4 ITU';
+  kString91_4 = '9.1.4 ITU';
+  kString90_6 = '9.0.6 ITU';
+  kString91_6 = '9.1.6 ITU';
+  kString90_4_W = '9.0.4';
+  kString91_4_W = '9.1.4';
+  kString90_6_W = '9.0.6';
+  kString91_6_W = '9.1.6';
   kString50_5 = '10.0 Auro-3D';
   kString51_5 = '10.1 Auro-3D';
   kString50_6 = '11.0 Auro-3D';
@@ -896,18 +1058,19 @@ const
   kString30_5_2 = '3.0.5.2';
   kString40_4_4 = '4.0.4.4';
   kString50_4_4 = '5.0.4.4';
-  kStringAmbi1stOrder = '1st Order Ambisonics';
-  kStringAmbi2cdOrder = '2nd Order Ambisonics';
-  kStringAmbi3rdOrder = '3rd Order Ambisonics';
-  kStringAmbi4thOrder = '4th Order Ambisonics';
-  kStringAmbi5thOrder = '5th Order Ambisonics';
-  kStringAmbi6thOrder = '6th Order Ambisonics';
-  kStringAmbi7thOrder = '7th Order Ambisonics';
+  kStringAmbi1stOrder = '1OA';
+  kStringAmbi2cdOrder = '2OA';
+  kStringAmbi3rdOrder = '3OA';
+  kStringAmbi4thOrder = '4OA';
+  kStringAmbi5thOrder = '5OA';
+  kStringAmbi6thOrder = '6OA';
+  kStringAmbi7thOrder = '7OA';
 
   // Speaker Arrangement String Representation with Speakers Name.
 
   kStringMonoS       = 'M';
   kStringStereoS     = 'L R';
+  kStringStereoWideS = 'Lw Rw';
   kStringStereoRS    = 'Ls Rs';
   kStringStereoCS    = 'Lc Rc';
   kStringStereoSS    = 'Sl Sr';
@@ -968,6 +1131,10 @@ const
   kString91_4S    = 'L R C LFE Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr';
   kString90_6S    = 'L R C Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr Tsl Tsr';
   kString91_6S    = 'L R C LFE Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr Tsl Tsr';
+  kString90_4_WS	= 'L R C Ls Rs Sl Sr Tfl Tfr Trl Trr Lw Rw';
+  kString91_4_WS	= 'L R C LFE Ls Rs Sl Sr Tfl Tfr Trl Trr Lw Rw';
+  kString90_6_WS	= 'L R C Ls Rs Sl Sr Tfl Tfr Trl Trr Tsl Tsr Lw Rw';
+  kString91_6_WS	= 'L R C LFE Ls Rs Sl Sr Tfl Tfr Trl Trr Tsl Tsr Lw Rw';
   kString50_5S    = 'L R C Ls Rs Tc Tfl Tfr Trl Trr';
   kString51_5S    = 'L R C LFE Ls Rs Tc Tfl Tfr Trl Trr';
   kString50_5_SonyS = 'L R C Ls Rs Tfl Tfc Tfr Trl Trr';
@@ -1243,6 +1410,9 @@ type
   // - [released: 3.6.8]
   // On Linux the host has to provide this interface to the plug-in as there's no global event run loop
   // defined as on other platforms.
+  // This can be done by IPlugFrame and the context which is passed to the plug-in as an argument
+  // in the method IPlugFactory3::setHostContext. This way the plug-in can get a runloop even if
+  // it does not have an editor.
   // A plug-in can register an event handler for a file descriptor. The host has to call the event
   // handler when the file descriptor is marked readable.
   // A plug-in also can register a timer which will be called repeatedly until it is unregistered.
@@ -1786,6 +1956,16 @@ type
     function EndEditFromHost(ParamID:TParamID):tresult; winapi;
   end;
 
+  // Extended plug-in interface IComponentHandler for an edit controller
+  // - [host imp]
+  // - [extends IComponentHandler]
+  // - [released: 3.7.9]
+  // - [optional]
+  IComponentHandlerSystemTime = interface(FUnknown)
+    ['{F9E53056-D155-4CD5-B769-5E1B7B0F7745}']
+    function GetSystemTime(var SysTime:Int64):tresult; winapi;
+  end;
+
   // Queue of changes for a specific parameter: Vst::IParamValueQueue
   // - [host imp]
   // - [released: 3.0.0]
@@ -1986,7 +2166,7 @@ type
   TNoteExpressionValue = Double;
 
 const
-  kVolumeTypeID = 0;   // Volume, plain range [0 = -oo , 0.25 = 0dB, 0.5 = +6dB, 1 = +12dB]: plain = 20 * log (4 * norm)
+  kVolumeTypeID = 0;     // Volume, plain range [0 = -oo , 0.25 = 0dB, 0.5 = +6dB, 1 = +12dB]: plain = 20 * log (4 * norm)
   kNETypeIDPan = 1;      // Panning (L-R), plain range [0 = left, 0.5 = center, 1 = right]
   // Tuning, plain range [0 = -120.0 (ten octaves down), 0.5 none, 1 = +120.0 (ten octaves up)]
   // plain = 240 * (norm - 0.5) and norm = plain / 240 + 0.5
@@ -2384,8 +2564,8 @@ type
 const
   kVstAudioEffectClass = 'Audio Module Class';
 
-  kSample32 = 0;  // 32-bit precision
-  kSample64 = 1;  // 64-bit precision
+  kSample32 = 0; // 32-bit precision
+  kSample64 = 1; // 64-bit precision
 
   kRealtime = 0; // realtime processing
   kPrefetch = 1; // prefetch processing
@@ -2535,11 +2715,25 @@ type
     function SetAudioPresentationLatencySamples(kBusDir:TBusDirection; BusIndex:Int32; LatencyInSamples:UInt32):tresult; winapi;
   end;
 
+const
+  kNeedSystemTime           = 1 shl 0;  // 1<<0  kSystemTimeValid
+  kNeedContinousTimeSamples = 1 shl 1;  // 1<<1  kContTimeValid
+  kNeedProjectTimeMusic     = 1 shl 2;  // 1<<2  kProjectTimeMusicValid
+  kNeedBarPositionMusic     = 1 shl 3;  // 1<<3  kBarPositionValid
+  kNeedCycleMusic           = 1 shl 4;  // 1<<4  kCycleValid
+  kNeedSamplesToNextClock   = 1 shl 5;  // 1<<5  kClockValid
+  kNeedTempo                = 1 shl 6;  // 1<<6  kTempoValid
+  kNeedTimeSignature        = 1 shl 7;  // 1<<7  kTimeSigValid
+  kNeedChord                = 1 shl 8;  // 1<<8  kChordValid
+  kNeedFrameRate            = 1 shl 9;  // 1<<9  kSmpteValid
+  kNeedTransportState       = 1 shl 10; // 1<<10 kPlaying, kCycleActive, kRecording
+
+type
   // Extended IAudioProcessor interface for a component: Vst::IProcessContextRequirements
-  //  - [plug imp]
-  //  - [extends IAudioProcessor]
-  //  - [released: 3.7.0]
-  //  - [mandatory]
+  // - [plug imp]
+  // - [extends IAudioProcessor]
+  // - [released: 3.7.0]
+  // - [mandatory]
   // To get accurate process context information (Vst::ProcessContext), it is now required to implement this interface and
   // return the desired bit mask of flags which your audio effect needs. If you do not implement this
   // interface, you may not get any information at all of the process function.
@@ -2550,27 +2744,155 @@ type
   // may not be as accurate as when using this interface.
   IProcessContextRequirements = interface(FUnknown)
     ['{2A654303-EF76-4E3D-95B5-FE83730EF6D0}']
-    // see TProcessContextRequirements, below
     function GetProcessContextRequirements:UInt32; winapi;
   end;
 
-  // For IProcessContextRequirements
-  TProcessContextRequirement = (
-    kNeedSystemTime,           // 1<<0  kSystemTimeValid
-    kNeedContinousTimeSamples, // 1<<1  kContTimeValid
-    kNeedProjectTimeMusic,     // 1<<2  kProjectTimeMusicValid
-    kNeedBarPositionMusic,     // 1<<3  kBarPositionValid
-    kNeedCycleMusic,           // 1<<4  kCycleValid
-    kNeedSamplesToNextClock,   // 1<<5  kClockValid
-    kNeedTempo,                // 1<<6  kTempoValid
-    kNeedTimeSignature,        // 1<<7  kTimeSigValid
-    kNeedChord,                // 1<<8  kChordValid
-    kNeedFrameRate,            // 1<<9  kSmpteValid
-    kNeedTransportState,       // 1<<10 kPlaying, kCycleActive, kRecording
-    kProcessContextRequirementMax=31
-  );
-  TProcessContextRequirements = set of TProcessContextRequirement;
+type
+  TDataExchangeQueueID = UInt32;
+  TDataExchangeBlockID = UInt32;
+  TDataExchangeUserContextID = UInt32;
+  PDataExchangeQueueID = ^TDataExchangeQueueID;
 
+const
+  InvalidDataExchangeQueueID = kMaxInt32;
+  InvalidDataExchangeBlockID = kMaxInt32;
+
+type
+  PDataExchangeBlock = ^TDataExchangeBlock;
+  TDataExchangeBlock = record
+    Data:Pointer; // pointer to the memory buffer
+    Size:UInt32;  // size of the memory buffer
+    BlockID:TDataExchangeBlockID; // block identifier
+  end;
+
+  // Host Data Exchange handler interface: Vst::IDataExchangeHandler
+  // - [host imp]
+  // - [context interface]
+  // - [released: 3.7.9]
+  // - [optional]
+  //
+  // The IDataExchangeHandler implements a direct and thread-safe connection from the realtime
+  // audio context of the audio processor to the non-realtime audio context of the edit controller.
+  // This should be used when the edit controller needs continuous data from the audio process for
+  // visualization or other use-cases. To circumvent the bottleneck on the main thread it is possible
+  // to configure the connection in a way that the calls to the edit controller will happen on a
+  // background thread.
+  //
+  // Opening a queue:
+  // The main operation for a plug-in is to open a queue via the handler before the plug-in is activated
+  // (but it must be connected to the edit controller via the IConnectionPoint when the plug-in is using
+  // the recommended separation of edit controller and audio processor). The best place to do this is in
+  // the IAudioProcessor::setupProcessing method as this is also the place where the plug-in knows the
+  // sample rate and maximum block size which the plug-in may need to calculate the queue block size.
+  // When a queue is opened the edit controller gets a notification about it and the controller can
+  // decide if it wishes to receive the data on the main thread or the background thread.
+  //
+  // Sending data:
+  // In the IAudioProcessor::process call the plug-in can now lock a block from the handler, fill it and
+  // when done free the block via the handler which then sends the block to the edit controller. The edit
+  // controller then receives the block either on the main thread or on a background thread depending on
+  // the setup of the queue.
+  // The host guarantees that all blocks are send before the plug-in is deactivated.
+  //
+  // Closing a queue:
+  // The audio processor must close an opened queue and this has to be done after the processor was
+  // deactivated and before it is disconnected from the edit controller (see IConnectionPoint).
+  //
+  // What to do when the queue is full and no block can be locked?
+  // The plug-in needs to be prepared for this situation as constraints in the overall system may cause
+  // the queue to get full. If you need to get this information to the controller you can declare a
+  // hidden parameter which you set to a special value and send this parameter change in your audio
+  // process method.
+  IDataExchangeHandler = interface(FUnknown)
+    ['{36D551BD-6FF5-4F08-B48E-830D8BD5A03B}']
+    // open a new queue
+    //
+    // only allowed to be called from the main thread when the component is not active but
+    // initialized and connected (see IConnectionPoint)
+    //
+    // param processor      the processor who wants to open the queue
+    // param blockSize      size of one block
+    // param numBlocks      number of blocks in the queue
+    // param alignment      data alignment, if zero will use the platform default alignment if any
+    // param userContextID  an identifier internal to the processor
+    // param outID          on return the ID of the queue
+    // return kResultTrue on success
+    function OpenQueue(Processor:IAudioProcessor; BlockSize,NumBlocks,Alignment:UInt32;
+      UserContextID:TDataExchangeUserContextID; OutID:PDataExchangeQueueID):tresult; winapi;
+
+    // close a queue
+    //
+    // closes and frees all memory of a previously opened queue
+    // if there are locked blocks in the queue, they are freed and made invalid
+    //
+    // only allowed to be called from the main thread when the component is not active but
+    // initialized and connected
+    //
+    // param queueID  the ID of the queue to close
+    // return kResultTrue on success
+    function CloseQueue(QueueID:TDataExchangeQueueID):tresult; winapi;
+
+    // lock a block if available
+    //
+    // only allowed to be called from within the IAudioProcessor::process call
+    //
+    // param queueID  the ID of the queue
+    // param block    on return will contain the data pointer and size of the block
+    // return kResultTrue if a free block was found and kOutOfMemory if all blocks are locked
+    function LockBlock(QueueID:TDataExchangeQueueID; Block:PDataExchangeBlock):tresult; winapi;
+
+    // free a previously locked block
+    // only allowed to be called from within the IAudioProcessor::process call
+    // param queueID           the ID of the queue
+    // param blockID           the ID of the block
+    // param sendToController	 if true the block data will be send to the IEditController otherwise
+    //                         it will be discarded
+    // return kResultTrue on success
+    function FreeBlock(QueueID:TDataExchangeQueueID; BlockID:TDataExchangeBlockID; SendToController:TBool):tresult; winapi;
+  end;
+
+  // Data Exchange Receiver interface: Vst::IDataExchangeReceiver
+  // - [plug imp]
+  // - [released: 3.7.9
+  // - [optional]
+  // The receiver interface is required to receive data from the realtime audio process via the IDataExchangeHandler.
+  IDataExchangeReceiver = interface(FUnknown)
+    ['{45A759DC-84FA-4907-ABCB-61752FC786B6}']
+    // queue opened notification
+    //
+    // called on the main thread when the processor has opened a queue
+    //
+    // param userContextID                 the user context ID of the queue
+    // param blockSize                     the size of one block of the queue
+    // param dispatchedOnBackgroundThread  if true on output the blocks are dispatched on a
+    //                                     background thread [defaults to false in which case the
+    //                                     blocks are dispatched on the main thread]
+    procedure QueueOpened(UserContextID:TDataExchangeUserContextID; BlockSize:UInt32; var DispatchOnBackgroundThread:TBool); winapi;
+
+    // queue closed notification
+    //
+    // called on the main thread when the processor has closed a queue
+    //
+    // param userContextID  the user context ID of the queue
+    procedure QueueClosed(UserContextID:TDataExchangeUserContextID); winapi;
+
+    // one or more blocks were received
+    //
+    // called either on the main thread or a background thread depending on the
+    // dispatchOnBackgroundThread value in the queueOpened call.
+    //
+    // the data of the blocks are only valid inside this call and the blocks only become available
+    // to the queue afterwards.
+    //
+    // param userContextID       the user context ID of the queue
+    // param numBlocks           number of blocks
+    // param blocks              the blocks
+    // param onBackgroundThread  true if the call is done on a background thread
+    procedure OnDataExchangeBlocksReceived(UserContextID:TDataExchangeUserContextID; NumBlocks:UInt32;
+      Blocks:PDataExchangeBlock; OnBackgroundThread:TBool); winapi;
+  end;
+
+type
   TAttrID = PAnsiChar;
 
   // Attribute list used in IMessage and IStreamAttributes: Vst::IAttributeList
@@ -3159,6 +3481,7 @@ const
   sIID_IEditController2 = '{7F4EFE59-F320-4967-AC27-A3AEAFB63038}';
   sIID_IMidiMapping = '{DF0FF9F7-49B7-4669-B63A-B7327ADBF5E5}';
   sIID_IEditControllerHostEditing = '{C1271208-7059-4098-B9DD-34B36BB0195E}';
+  sIID_IComponentHandlerSystemTime = '{F9E53056-D155-4CD5-B769-5E1B7B0F7745}';
   sIID_IParamValueQueue = '{01263A18-ED07-4F6F-98C9-D3564686F9BA}';
   sIID_IParameterChanges = '{A4779663-0BB6-4A56-B443-84A8466FEB9D}';
   sIID_INoteExpressionController = '{B7F8F859-4123-4872-9116-95814F3721A3}';
@@ -3168,6 +3491,8 @@ const
   sIID_IAudioProcessor = '{42043F99-B7DA-453C-A569-E79D9AAEC33D}';
   sIID_IAudioPresentationLatency = '{309ECE78-EB7D-4FAE-8B22-25D909FD08B6}';
   sIID_IProcessContextRequirements = '{2A654303-EF76-4E3D-95B5-FE83730EF6D0}';
+  sIID_IDataExchangeHandler = '{36D551BD-6FF5-4F08-B48E-830D8BD5A03B}';
+  sIID_IDataExchangeReceiver = '{45A759DC-84FA-4907-ABCB-61752FC786B6}';
   sIID_IMessage = '{936F033B-C6C0-47DB-BB08-82F813C1E613}';
   sIID_IConnectionPoint = '{70A4156F-6E6E-4026-9891-48BFAA60D8D1}';
   sIID_IPrefetchableSupport = '{8AE54FDA-E930-46B9-A285-55BCDC98E21E}';
@@ -3229,6 +3554,7 @@ const
   IID_IEditController2:TGuid = sIID_IEditController2;
   IID_IMidiMapping:TGuid = sIID_IMidiMapping;
   IID_IEditControllerHostEditing:TGuid = sIID_IEditControllerHostEditing;
+  IID_IComponentHandlerSystemTime:TGuid = sIID_IComponentHandlerSystemTime;
   IID_IParamValueQueue:TGuid = sIID_IParamValueQueue;
   IID_IParameterChanges:TGuid = sIID_IParameterChanges;
   IID_INoteExpressionController:TGuid = sIID_INoteExpressionController;
@@ -3238,6 +3564,8 @@ const
   IID_IAudioProcessor:TGuid = sIID_IAudioProcessor;
   IID_IAudioPresentationLatency:TGuid = sIID_IAudioPresentationLatency;
   IID_IProcessContextRequirements:TGuid = sIID_IProcessContextRequirements;
+  IID_IDataExchangeHandler:TGuid = sIID_IDataExchangeHandler;
+  IID_IDataExchangeReceiver:TGuid = sIID_IDataExchangeReceiver;
   IID_IMessage:TGuid = sIID_IMessage;
   IID_IConnectionPoint:TGuid = sIID_IConnectionPoint;
   IID_IPrefetchableSupport:TGuid = sIID_IPrefetchableSupport;
@@ -3776,12 +4104,12 @@ type
   // Attributes used to defined a Layer in a VST XML Representation
   TAttributes = record
   public const
-    kStyle  = ATTR_STYLE;   // string attribute : See AttributesStyle for available string value
-    kLEDStyle  = ATTR_LEDSTYLE;  // string attribute : See AttributesStyle for available string value
-    kSwitchStyle = ATTR_SWITCHSTYLE;  // string attribute : See AttributesStyle for available string value
+    kStyle = ATTR_STYLE; // string attribute : See AttributesStyle for available string value
+    kLEDStyle = ATTR_LEDSTYLE; // string attribute : See AttributesStyle for available string value
+    kSwitchStyle = ATTR_SWITCHSTYLE; // string attribute : See AttributesStyle for available string value
     kKnobTurnsPerFullRange = ATTR_TURNSPERFULLRANGE; // float attribute
-    kFunction  = ATTR_FUNCTION;  // string attribute : See AttributesFunction for available string value
-    kFlags  = ATTR_FLAGS;   // string attribute : See AttributesFlags for available string value
+    kFunction = ATTR_FUNCTION; // string attribute : See AttributesFunction for available string value
+    kFlags = ATTR_FLAGS; // string attribute : See AttributesFlags for available string value
   end;
 
   // Attributes Function used to defined the function of a Layer in a VST XML Representation
@@ -3864,7 +4192,7 @@ type
     // parameters in a controlled way
     kRandomize = 'Randomize';
 
-    /// Panner Type
+    // Panner Type
 
     kPanPosCenterX = 'PanPosCenterX'; // Gravity point X-axis [0, 1]=>[L-R] (for stereo: middle between left and right)
     kPanPosCenterY = 'PanPosCenterY'; // Gravity point Y-axis [0, 1]=>[Front-Rear]
