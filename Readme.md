@@ -1,6 +1,6 @@
 # vst3-pas
 
-The Object Pascal(FPC and Delphi) bindings of VST 3 API.
+The Object Pascal(FPC and Delphi) bindings of VST 3 API. Current version is 3.7.9 (2023/10/09).
 
 Original API is at <https://github.com/steinbergmedia/vst3_pluginterfaces>
 
@@ -8,7 +8,7 @@ VST is a trademark of Steinberg Media Technologies GmbH, registered in Europe an
 
 ## Usage
 
-- Support Free Pascal 3.2.2 and trunk(3.3.1).
+- Support Free Pascal 3.2.2 and above.
 
 - Support Delphi 11, and should support at least 10.x series versions(untested).
 
@@ -16,9 +16,9 @@ VST is a trademark of Steinberg Media Technologies GmbH, registered in Europe an
 
 Use Lazarus to open the `vst3pas.lpk` in `package`, and click `Add to project`.
 
-Add compiler directive `{$Interfaces CORBA}` in all files.
+Add compiler directive `{$Interfaces CORBA}` in files which need the interfaces in VST3.
 
-Please use at least Lazarus 3.0RC2, or the trunk(3.99), older versions have some bugs, see issue [#40368](https://gitlab.com/freepascal.org/lazarus/lazarus/-/issues/40368) and [#40369](https://gitlab.com/freepascal.org/lazarus/lazarus/-/issues/40369).
+Please use at least Lazarus 3.0 RC2, older versions have some bugs with modifier `winapi`.
 
 ### Delphi
 
@@ -32,7 +32,7 @@ Delphi IDE have some bugs like older Lazarus, I hope it would be fixed.
 
 See `examples` directory, now only support Windows.
 
-In theory, FPC and Lazarus versions can easily support Linux and macOS, if you can help to support them and test, please make a PR.
+In theory, FPC and Lazarus versions can easily support Linux and macOS with some adapt.
 
 ## License
 
