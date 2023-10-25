@@ -24,7 +24,7 @@ Please use at least Lazarus 3.0RC2, or the trunk(3.99), older versions have some
 
 Add `source` to compiler search path, or copy file `vst3intf.pas` to your project directory.
 
-Use `[unsafe]` in some places and must use `unsafe` when returing an interface.
+Use `[unsafe]` in some places and must use `unsafe` when returning an interface.
 
 Delphi IDE have some bugs like older Lazarus, I hope it would be fixed.
 
@@ -34,6 +34,6 @@ See `examples` directory, now only support Windows.
 
 In theory, FPC and Lazarus versions can easily support Linux and macOS, if you can help to support them and test, please make a PR.
 
-## Lincese
+## License
 
 The original VST 3 SDK has a dual license, as a port of VST 3 API, it is licensed under GPLv3.
