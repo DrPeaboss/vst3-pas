@@ -177,12 +177,86 @@ const
   kOutOfMemory     = tresult($80000002); // E_OUTOFMEMORY
 {$endif}
 
+const
+  sIID_FUnknown = '{00000000-0000-0000-C000-000000000046}';
+  sIID_IBStream = '{C3BF6EA2-3099-4752-9B6B-F9901EE33E9B}';
+  sIID_ISizeableStream = '{04F9549E-E02F-4E6E-87E8-6A8747F4E17F}';
+  sIID_IPluginBase = '{22888DDB-156E-45AE-8358-B34808190625}';
+  sIID_IPluginFactory = '{7A4D811C-5211-4A1F-AED9-D2EE0B43BF9F}';
+  sIID_IPluginFactory2 = '{0007B650-F24B-4C0B-A464-EDB9F00B2ABB}';
+  sIID_IPluginFactory3 = '{4555A2AB-C123-4E57-9B12-291036878931}';
+  sIID_IStringResult = '{550798BC-8720-49DB-8492-0A153B50B7A8}';
+  sIID_IString = '{F99DB7A3-0FC1-4821-800B-0CF98E348EDF}';
+  sIID_IUpdateHandler = '{F5246D56-8654-4d60-B026-AFB57B697B37}';
+  sIID_IDependent = '{EC5E9713-71FF-49C2-82DA-8520AC017E63}';
+  sIID_IPersistent = '{BA1A4637-3C9F-46D0-A65D-BA0EB85DA829}';
+  sIID_IAttributes = '{FA1E32F9-CA6D-46F5-A982-F956B1191B58}';
+  sIID_IAttributes2 = '{1382126A-FECA-4871-97D5-2A45B042AE99}';
+  sIID_IErrorContext = '{12BCD07B-7C69-4336-B7DA-77C3444A0CD0}';
+  sIID_ICloneable = '{D45406B9-3A2D-4443-9DAD-9BA985A1454B}';
+  sIID_IPlugFrame = '{01AF7F36-9346-A9AF-8D4D-A2A0ED0882A3}';
+  sIID_IPlugView = '{0725C35B-EA49-60D0-A615-1B522B755B29}';
+{$IFDEF LINUX}
+  sIID_IEventHandler = '{C9651E56-6F49-A013-813A-2C35654D7983}';
+  sIID_ITimerHandler = '{4FD9BD10-7447-4241-821F-AD8FECA72CA9}';
+  sIID_IRunLoop = '{6653C318-1A4F-7697-9C5B-83857A871389}';
+{$ENDIF}
+  sIID_IPlugViewContentScaleSupport = '{65ED9690-8AC4-4525-8AAD-EF7A72EA703F}';
+  sIID_IAttributeList = '{1E5F0AEB-CC7F-4533-A254-401138AD5EE4}';
+  sIID_IStreamAttributes = '{D6CE2FFC-EFAF-4B8C-9E74-F1BB12DA44B4}';
+  sIID_IUnitHandler = '{4B5147F8-4654-486B-8DAB-30BA163A3C56}';
+  sIID_IUnitHandler2 = '{F89F8CDF-699E-4BA5-96AA-C9A481452B01}';
+  sIID_IUnitInfo = '{3D4BD6B5-913A-4FD2-A886-E768A5EB92C1}';
+  sIID_IProgramListData = '{8683B01F-7B35-4F70-A265-1DEC353AF4FF}';
+  sIID_IUnitData = '{6C389611-D391-455D-B870-B83394A0EFDD}';
+  sIID_IContextMenu = '{2E93C863-0C9C-4588-97DB-ECF5AD17817D}';
+  sIID_IComponentHandler3 = '{69F11617-D26B-400D-A4B6-B9647B6EBBAB}';
+  sIID_IContextMenuTarget = '{3CDF2E75-85D3-4144-BF86-D36BD7C48940}';
+  sIID_IComponent = '{E831FF31-F2D5-4301-928E-BBEE25697802}';
+  sIID_IComponentHandler = '{93A0BEA3-0BD0-45DB-8E89-0B0CC1E46AC6}';
+  sIID_IComponentHandler2 = '{F040B4B3-A360-45EC-ABCD-C045B4D5A2CC}';
+  sIID_IComponentHandlerBusActivation = '{067D02C1-5B4E-274D-A92D-90FD6EAF7240}';
+  sIID_IProgress = '{00C9DC5B-9D90-4254-91A3-88C8B4E91B69}';
+  sIID_IEditController = '{DCD7BBE3-7742-448D-A874-AACC979C759E}';
+  sIID_IEditController2 = '{7F4EFE59-F320-4967-AC27-A3AEAFB63038}';
+  sIID_IMidiMapping = '{DF0FF9F7-49B7-4669-B63A-B7327ADBF5E5}';
+  sIID_IEditControllerHostEditing = '{C1271208-7059-4098-B9DD-34B36BB0195E}';
+  sIID_IComponentHandlerSystemTime = '{F9E53056-D155-4CD5-B769-5E1B7B0F7745}';
+  sIID_IParamValueQueue = '{01263A18-ED07-4F6F-98C9-D3564686F9BA}';
+  sIID_IParameterChanges = '{A4779663-0BB6-4A56-B443-84A8466FEB9D}';
+  sIID_INoteExpressionController = '{B7F8F859-4123-4872-9116-95814F3721A3}';
+  sIID_IKeyswitchController = '{1F2F76D3-BFFB-4B96-B995-27A55EBCCEF4}';
+  sIID_INoteExpressionPhysicalUIMapping = '{B03078FF-94D2-4AC8-90CC-D303D4133324}';
+  sIID_IEventList = '{3A2C4214-3463-49FE-B2C4-F397B9695A44}';
+  sIID_IAudioProcessor = '{42043F99-B7DA-453C-A569-E79D9AAEC33D}';
+  sIID_IAudioPresentationLatency = '{309ECE78-EB7D-4FAE-8B22-25D909FD08B6}';
+  sIID_IProcessContextRequirements = '{2A654303-EF76-4E3D-95B5-FE83730EF6D0}';
+  sIID_IDataExchangeHandler = '{36D551BD-6FF5-4F08-B48E-830D8BD5A03B}';
+  sIID_IDataExchangeReceiver = '{45A759DC-84FA-4907-ABCB-61752FC786B6}';
+  sIID_IMessage = '{936F033B-C6C0-47DB-BB08-82F813C1E613}';
+  sIID_IConnectionPoint = '{70A4156F-6E6E-4026-9891-48BFAA60D8D1}';
+  sIID_IPrefetchableSupport = '{8AE54FDA-E930-46B9-A285-55BCDC98E21E}';
+  sIID_IParameterFinder = '{0F618302-215D-4587-A512-073C77B9D383}';
+  sIID_IXmlRepresentationController = '{A81A0471-48C3-4DC4-AC30-C9E13C8393D5}';
+  sIID_IHostApplication = '{58E595CC-DB2D-4969-8B6A-AF8C36A664E5}';
+  sIID_IVst3ToVst2Wrapper = '{29633AEC-1D1C-47E2-BB85-B97BD36EAC61}';
+  sIID_IVst3ToAUWrapper = '{A3B8C6C5-C095-4688-B091-6F0BB697AA44}';
+  sIID_IVst3ToAAXWrapper = '{6D319DC6-60C5-6242-B32C-951B93BEF4C6}';
+  sIID_IVst3WrapperMPESupport = '{44149067-42CF-4BF9-8800-B750F7359FE3}';
+  sIID_IAutomationState = '{B4E8287F-1BB3-46AA-83A4-666768937BAB}';
+  sIID_IMidiLearn = '{6B2449CC-4197-40B5-AB3C-79DAC5FE5C86}';
+  sIID_IParameterFunctionName = '{6D21E1DC-9119-9D4B-A2A0-2FEF6C1AE55C}';
+  sIID_IPlugInterfaceSupport = '{4FB58B9E-9EAA-4E0F-AB36-1C1CCCB56FEA}';
+  sIID_IInterAppAudioHost = '{0CE5743D-68DF-415E-AE28-5BD4E2CDC8FD}';
+  sIID_IInterAppAudioConnectionNotification = '{6020C72D-5FC2-4AA1-B095-0DB5D7D6D5CF}';
+  sIID_IInterAppAudioPresetManager = '{ADE6FCC4-46C9-4E1D-B3B4-9A80C93FEFDD}';
+  sIID_IPluginCompatibility = '{4AFD4B6A-35D7-C240-A5C3-1414FB7D15E6}';
+
 type
 {$ifndef FPC}
   FUnknown = IUnknown;
 {$else}
-  FUnknown = interface
-    ['{00000000-0000-0000-C000-000000000046}']
+  FUnknown = interface [sIID_FUnknown]
     // Query for a pointer to the specified interface.
     // Returns kResultOk on success or kNoInterface if the object does not implement the interface.
     // The object has to call addRef when returning an interface.
@@ -230,8 +304,7 @@ type
   // Base class for streams.
   // read/write binary data from/to stream
   // get/set stream read-write position (read and write position is the same)
-  IBStream = interface(FUnknown)
-    ['{C3BF6EA2-3099-4752-9B6B-F9901EE33E9B}']
+  IBStream = interface(FUnknown) [sIID_IBStream]
     // Reads binary data from stream.
     // param buffer : destination buffer
     // param numBytes : amount of bytes to be read
@@ -254,8 +327,7 @@ type
 
   // Stream with a size.
   // [extends IBStream] when stream type supports it (like file and memory stream)
-  ISizeableStream = interface(FUnknown)
-    ['{04F9549E-E02F-4E6E-87E8-6A8747F4E17F}']
+  ISizeableStream = interface(FUnknown) [sIID_ISizeableStream]
     // Return the stream size
     function GetStreamSize(var size:Int64):tresult; winapi;
     // Set the steam size. File streams can only be resized if they are write enabled.
@@ -270,8 +342,7 @@ type
   // host that the plug-in will need to work. These interfaces can vary from category to category.
   // A list of supported host context interfaces should be included in the documentation
   // of a specific category.
-  IPluginBase = interface(FUnknown)
-    ['{22888DDB-156E-45AE-8358-B34808190625}']
+  IPluginBase = interface(FUnknown) [sIID_IPluginBase]
     // The host passes a number of interfaces as context to initialize the plug-in class.
     // param context, passed by the host, is mandatory and should implement IHostApplication
     // Extensive memory allocations etc. should be performed in this method rather than in the class' constructor!
@@ -397,8 +468,7 @@ type
   // a certain kind of object(s). The interface IPluginFactory provides methods
   // to get information about the classes exported by the plug-in and a mechanism
   // to create instances of these classes (that usually define the IPluginBase interface).
-  IPluginFactory = interface(FUnknown)
-    ['{7A4D811C-5211-4A1F-AED9-D2EE0B43BF9F}']
+  IPluginFactory = interface(FUnknown) [sIID_IPluginFactory]
     // Fill a TPFactoryInfo structure with information about the plug-in vendor.
     function GetFactoryInfo(info:PPFactoryInfo):tresult; winapi;
     // Returns the number of exported classes by this factory.
@@ -412,16 +482,14 @@ type
 
   // IPluginFactory2 interface declaration
   // Version 2 of class factory supporting TPClassInfo2: IPluginFactory2
-  IPluginFactory2 = interface(IPluginFactory)
-    ['{0007B650-F24B-4C0B-A464-EDB9F00B2ABB}']
+  IPluginFactory2 = interface(IPluginFactory) [sIID_IPluginFactory2]
     // Returns the class info (version 2) for a given index.
     function GetClassInfo2(index:Int32; info:PPClassInfo2):tresult; winapi;
   end;
 
   // IPluginFactory3 interface declaration
   // Version 3 of class factory supporting TPClassInfoW: IPluginFactory3
-  IPluginFactory3 = interface(IPluginFactory2)
-    ['{4555A2AB-C123-4E57-9B12-291036878931}']
+  IPluginFactory3 = interface(IPluginFactory2) [sIID_IPluginFactory3]
     // Returns the unicode class info for a given index.
     function GetClassInfoUnicode(index:Int32; info:PPClassInfoW):tresult; winapi;
     // Receives information about host
@@ -437,16 +505,14 @@ type
   // a method requires a string of unknown size.
   // - [host imp] or [plug imp]
   // - [released: SX 4]
-  IStringResult = interface(FUnknown)
-    ['{550798BC-8720-49DB-8492-0A153B50B7A8}']
+  IStringResult = interface(FUnknown) [sIID_IStringResult]
     procedure SetText(Text:PChar8); winapi;
   end;
 
   // Interface to a string of variable size and encoding.
   // - [host imp] or [plug imp]
   // - [released: ]
-  IString = interface(FUnknown)
-    ['{F99DB7A3-0FC1-4821-800B-0CF98E348EDF}']
+  IString = interface(FUnknown) [sIID_IString]
     // Assign ASCII string
     procedure SetText8(Text:PChar8); winapi;
     // Assign unicode string
@@ -486,8 +552,7 @@ type
   // - Trigger updates when an object has changed
   // Can be used between host-objects and the Plug-In or
   // inside the Plug-In to handle internal updates!
-  IUpdateHandler = interface(FUnknown)
-    ['{F5246D56-8654-4d60-B026-AFB57B697B37}']
+  IUpdateHandler = interface(FUnknown) [sIID_IUpdateHandler]
     // Install update notification for given object. It is essential to
     // remove all dependencies again using 'removeDependent'! Dependencies
     // are not removed automatically when the 'object' is released!
@@ -509,8 +574,7 @@ type
   // [plug imp]
   // - notify changes of a model
   // see IUpdateHandler
-  IDependent = interface(FUnknown)
-    ['{EC5E9713-71FF-49C2-82DA-8520AC017E63}']
+  IDependent = interface(FUnknown) [sIID_IDependent]
     // Inform the dependent, that the passed FUnknown has changed
     procedure Update(ChangedUnknown:FUnknown; msg:TChangeMessage); winapi;
   end;
@@ -521,8 +585,7 @@ type
   // [plug imp]
   // This interface is used to store/restore attributes of an object.
   // An IPlugController can implement this interface to handle presets.
-  IPersistent = interface(FUnknown)
-    ['{BA1A4637-3C9F-46D0-A65D-BA0EB85DA829}']
+  IPersistent = interface(FUnknown) [sIID_IPersistent]
     // The class ID must be a 16 bytes unique id that is used to create the object.
     // This ID is also used to identify the preset list when used with presets.
     function GetClassID(uid:PGuid):tresult; winapi;
@@ -541,8 +604,7 @@ type
   // All data stored to the archive are identified by a string (IAttrID), which must be unique on each
   // IAttribute level.
   // The basic set/get methods make use of the FVariant class.
-  IAttributes = interface(FUnknown)
-    ['{FA1E32F9-CA6D-46F5-A982-F956B1191B58}']
+  IAttributes = interface(FUnknown) [sIID_IAttributes]
     // Store any data in the archive. It is even possible to store sub-attributes by creating
     // a new IAttributes instance via the IHostClasses interface and pass it to the parent in the
     // FVariant. In this case the archive must take the ownership of the newly created object, which
@@ -581,8 +643,7 @@ type
   // Extended access to Attributes; supports Attribute retrieval via iteration.
   // - [host imp]
   // - [released] C7/N6
-  IAttributes2 = interface(IAttributes)
-    ['{1382126A-FECA-4871-97D5-2A45B042AE99}']
+  IAttributes2 = interface(IAttributes) [sIID_IAttributes2]
     // Returns the number of existing attributes.
     function CountAttributes:Int32; winapi;
     // Returns the attribute's ID for the given index.
@@ -592,8 +653,7 @@ type
   // Interface for error handling.
   // - [plug imp]
   // - [released: Sequel 2]
-  IErrorContext = interface(FUnknown)
-    ['{12BCD07B-7C69-4336-B7DA-77C3444A0CD0}']
+  IErrorContext = interface(FUnknown) [sIID_IErrorContext]
     // Tells the plug-in to not show any UI elements on errors.
     procedure DisableErrorUI(state:Boolean); winapi;
     // If an error happens and disableErrorUI was not set this should return kResultTrue
@@ -606,8 +666,7 @@ type
   // Interface allowing an object to be copied.
   // - [plug & host imp]
   // - [released: N4.12]
-  ICloneable = interface(FUnknown)
-    ['{D45406B9-3A2D-4443-9DAD-9BA985A1454B}']
+  ICloneable = interface(FUnknown) [sIID_ICloneable]
     // Create exact copy of the object
     function Clone:FUnknown {$ifdef DCC}unsafe{$endif}; winapi;
   end;
@@ -1326,8 +1385,7 @@ type
   // keyboard events by the means of platform callbacks, but let the host pass them to the view. The host
   // depends on a proper return value when IPlugView::onKeyDown is called, otherwise the plug-in view may
   // cause a malfunction of the host's key command handling.
-  IPlugView = interface(FUnknown)
-    ['{0725C35B-EA49-60D0-A615-1B522B755B29}']
+  IPlugView = interface(FUnknown) [sIID_IPlugView]
     // Is Platform UI Type supported
     // param type : IDString of platformUIType
     function IsPlatformTypeSupported(Typ:FIDString):tresult; winapi;
@@ -1379,8 +1437,7 @@ type
   // - [released: 3.0.0]
   // - [mandatory]
   // Enables a plug-in to resize the view and cause the host to resize the window.
-  IPlugFrame = interface(FUnknown)
-    ['{01AF7F36-9346-A9AF-8D4D-A2A0ED0882A3}']
+  IPlugFrame = interface(FUnknown) [sIID_IPlugFrame]
     function ResizeView(view:IPlugView;NewSize:PViewRect):tresult; winapi;
   end;
 
@@ -1391,16 +1448,14 @@ type
   // Linux event handler interface
   // - [plug imp]
   // - [released: 3.6.8]
-  IEventHandler = interface(FUnknown)
-    ['{C9651E56-6F49-A013-813A-2C35654D7983}']
+  IEventHandler = interface(FUnknown) [sIID_IEventHandler]
     procedure OnFDIsSet(fd:FileDescriptor); winapi;
   end;
 
   // Linux timer handler interface
   // - [plug imp]
   // - [released: 3.6.8]
-  ITimerHandler = interface(FUnknown)
-    ['{4FD9BD10-7447-4241-821F-AD8FECA72CA9}']
+  ITimerHandler = interface(FUnknown) [sIID_ITimerHandler]
     procedure OnTimer; winapi;
   end;
 
@@ -1416,8 +1471,7 @@ type
   // A plug-in can register an event handler for a file descriptor. The host has to call the event
   // handler when the file descriptor is marked readable.
   // A plug-in also can register a timer which will be called repeatedly until it is unregistered.
-  IRunLoop = interface(FUnknown)
-    ['{6653C318-1A4F-7697-9C5B-83857A871389}']
+  IRunLoop = interface(FUnknown) [sIID_IRunLoop]
     function RegisterEventHandler(handler:IEventHandler; fd:FileDescriptor):TResult; winapi;
     function UnregisterEventHandler(handler:IEventHandler):TResult; winapi;
     function RegisterTimer(handler:ITimerHandler; milliseconds:TimerInterval):TResult; winapi;
@@ -1448,8 +1502,7 @@ type
   // IPlugView::getSize() afterwards you return the size of your view for that new scale factor.
   // It is recommended to implement this interface on Microsoft Windows to let the host know that the
   // plug-in is able to render in different scalings.
-  IPlugViewContentScaleSupport = interface(FUnknown)
-    ['{65ED9690-8AC4-4525-8AAD-EF7A72EA703F}']
+  IPlugViewContentScaleSupport = interface(FUnknown) [sIID_IPlugViewContentScaleSupport]
     function SetContentScaleFactor(Factor:TScaleFactor):tresult; winapi;
   end;
 
@@ -1537,8 +1590,7 @@ type
   // It contains the common parts of any kind of processing class. The parts that
   // are specific to a media type are defined in a separate interface. An implementation
   // component must provide both the specific interface and IComponent.
-  IComponent = interface(IPluginBase)
-    ['{E831FF31-F2D5-4301-928E-BBEE25697802}']
+  IComponent = interface(IPluginBase) [sIID_IComponent]
     // Called before initializing the component to get information about the controller class.
     function GetControllerClassID(classid:PGuid):tresult; winapi;
     // Called before 'initialize' to set the component usage (optional). See IoModes
@@ -1678,8 +1730,7 @@ type
   // - [mandatory]
   // Allow transfer of parameter editing to component (processor) via host and support automation.
   // Cause the host to react on configuration changes (restartComponent).
-  IComponentHandler = interface(FUnknown)
-    ['{93A0BEA3-0BD0-45DB-8E89-0B0CC1E46AC6}']
+  IComponentHandler = interface(FUnknown) [sIID_IComponentHandler]
     // To be called before calling a performEdit (e.g. on mouse-click-down event).
     // This must be called in the UI-Thread context!
     function BeginEdit(ID:TParamID):tresult; winapi;
@@ -1706,8 +1757,7 @@ type
   // Steinberg::Vst::IComponentHandler::performEdit / Steinberg::Vst::IComponentHandler::endEdit functions (see IComponentHandler)
   // which should use the same timestamp in the host when writing automation.
   // This allows for better synchronizing of multiple parameter changes at once.
-  IComponentHandler2 = interface(FUnknown)
-    ['{F040B4B3-A360-45EC-ABCD-C045B4D5A2CC}']
+  IComponentHandler2 = interface(FUnknown) [sIID_IComponentHandler2]
     // Tells host that the plug-in is dirty (something besides parameters has changed since last save),
     // if true the host should apply a save before quitting.
     function SetDirty(state:TBool):tresult; winapi;
@@ -1732,8 +1782,7 @@ type
   // If the host accepts this request, it will call later on IComponent::activateBus.
   // This is particularly useful for instruments with more than 1 outputs, where
   // the user could request from the plug-in UI a given output bus activation.
-  IComponentHandlerBusActivation = interface(FUnknown)
-    ['{067D02C1-5B4E-274D-A92D-90FD6EAF7240}']
+  IComponentHandlerBusActivation = interface(FUnknown) [sIID_IComponentHandlerBusActivation]
     // request the host to activate or deactivate a specific bus.
     function RequestBusActivation(Typ:TMediaType; dir:TBusDirection; index:Int32; state:TBool):tresult; winapi;
   end;
@@ -1765,8 +1814,7 @@ type
   // A context menu is composed of Item (entry). A Item is defined by a name, a tag, a flag
   // and a associated target (called when this item will be selected/executed).
   // With IContextMenu the plug-in can retrieve a Item, add a Item, remove a Item and pop-up the menu.
-  IContextMenu = interface(FUnknown)
-    ['{2E93C863-0C9C-4588-97DB-ECF5AD17817D}']
+  IContextMenu = interface(FUnknown) [sIID_IContextMenu]
     // Gets the number of menu items.
     function GetItemCount:Int32; winapi;
     // Gets a menu item and its target (target could be not assigned).
@@ -1785,8 +1833,7 @@ type
   // - [released: 3.5.0]
   // - [optional]
   // A receiver of a menu item should implement this interface, which will be called after the user has selected this menu item.
-  IContextMenuTarget = interface(FUnknown)
-    ['{3CDF2E75-85D3-4144-BF86-D36BD7C48940}']
+  IContextMenuTarget = interface(FUnknown) [sIID_IContextMenuTarget]
     // Called when an menu item was executed.
     function ExecuteMenuItem(tag:Int32):tresult; winapi;
   end;
@@ -1803,8 +1850,7 @@ type
   // - add its own items to the menu via the IContextMenu interface and call IContextMenu::popup(..) to create the pop-up. See the IContextMenuExample.
   // - extract the host menu items and add them to a context menu created by the plug-in.
   // Note: You can and should use this even if you do not add your own items to the menu as this is considered to be a big user value.
-  IComponentHandler3 = interface(FUnknown)
-    ['{69F11617-D26B-400D-A4B6-B9647B6EBBAB}']
+  IComponentHandler3 = interface(FUnknown) [sIID_IComponentHandler3]
     // Creates a host context menu for a plug-in:
 		// - If paramID is zero, the host may create a generic context menu.
 		// - The IPlugView object must be valid.
@@ -1832,8 +1878,7 @@ type
   // status of the loading progress and to inform the user when the loading is finished.
   // Note: During the progress, the host can unload the plug-in at any time. Make sure that
   // the plug-in supports this use case.
-  IProgress = interface(FUnknown)
-    ['{00C9DC5B-9D90-4254-91A3-88C8B4E91B69}']
+  IProgress = interface(FUnknown) [sIID_IProgress]
     // Start a new progress of a given type and optional Description. outID is as ID created by the
     // host to identify this newly created progress (for update and finish method)
     function Start(typ:TProgressType; OptionalDescription:PWideChar; var OutID:UInt64):tresult; winapi;
@@ -1848,8 +1893,7 @@ type
   // - [released: 3.0.0]
   // - [mandatory]
   // The controller part of an effect or instrument with parameter handling (export, definition, conversion...).
-  IEditController = interface(IPluginBase)
-    ['{DCD7BBE3-7742-448D-A874-AACC979C759E}']
+  IEditController = interface(IPluginBase) [sIID_IEditController]
     // Receives the component state.
     function SetComponentState(state:IBStream):tresult; winapi;
     // Sets the controller state.
@@ -1899,8 +1943,7 @@ type
   // - [optional]
   // Extension to allow the host to inform the plug-in about the host Knob Mode,
   // and to open the plug-in about box or help documentation.
-  IEditController2 = interface(FUnknown)
-    ['{7F4EFE59-F320-4967-AC27-A3AEAFB63038}']
+  IEditController2 = interface(FUnknown) [sIID_IEditController2]
     // Host could set the Knob Mode for the plug-in. Return kResultFalse means not supported mode. see KnobModes.
     function SetKnobMode(mode:TKnobMode):tresult; winapi;
     // Host could ask to open the plug-in help (could be: opening a PDF document or link to a web page).
@@ -1929,8 +1972,7 @@ type
   // aftertouch (see ControllerNumbers).
   // If the mapping has changed, the plug-in must call IComponentHandler::restartComponent (kMidiCCAssignmentChanged)
   // to inform the host about this change.
-  IMidiMapping = interface(FUnknown)
-    ['{DF0FF9F7-49B7-4669-B63A-B7327ADBF5E5}']
+  IMidiMapping = interface(FUnknown) [sIID_IMidiMapping]
     // Gets an (preferred) associated ParamID for a given Input Event Bus index, channel and MIDI Controller.
     // param[in] busIndex - index of Input Event Bus
     // param[in] channel - channel of the bus
@@ -1948,8 +1990,7 @@ type
   // If this interface is implemented by the edit controller, and when performing edits from outside
   // the plug-in (host / remote) of a not automatable and not read-only, and not hidden flagged parameter (kind of helper parameter),
   // the host will start with a beginEditFromHost before calling setParamNormalized and end with an endEditFromHost.
-  IEditControllerHostEditing = interface(FUnknown)
-    ['{C1271208-7059-4098-B9DD-34B36BB0195E}']
+  IEditControllerHostEditing = interface(FUnknown) [sIID_IEditControllerHostEditing]
     // Called before a setParamNormalized sequence, a endEditFromHost will be call at the end of the editing action.
     function BeginEditFromHost(ParamID:TParamID):tresult; winapi;
     // Called after a beginEditFromHost and a sequence of setParamNormalized.
@@ -1961,8 +2002,7 @@ type
   // - [extends IComponentHandler]
   // - [released: 3.7.9]
   // - [optional]
-  IComponentHandlerSystemTime = interface(FUnknown)
-    ['{F9E53056-D155-4CD5-B769-5E1B7B0F7745}']
+  IComponentHandlerSystemTime = interface(FUnknown) [sIID_IComponentHandlerSystemTime]
     function GetSystemTime(var SysTime:Int64):tresult; winapi;
   end;
 
@@ -1979,8 +2019,7 @@ type
   // section of the curve as a straight line from the previous point of a block to
   // the new one. So the plug-in can calculate the value of the curve for any sample
   // position in the block.
-  IParamValueQueue = interface(FUnknown)
-    ['{01263A18-ED07-4F6F-98C9-D3564686F9BA}']
+  IParamValueQueue = interface(FUnknown) [sIID_IParamValueQueue]
     // Returns its associated ID.
     function GetParameterID:TParamID; winapi;
     // Returns count of points in the queue.
@@ -1999,8 +2038,7 @@ type
   // in the current processing block. A change can be caused by GUI interaction as
   // well as automation. They are transmitted as a list of queues (IParamValueQueue)
   // containing only queues for parameters that actually did change.
-  IParameterChanges = interface(FUnknown)
-    ['{A4779663-0BB6-4A56-B443-84A8466FEB9D}']
+  IParameterChanges = interface(FUnknown) [sIID_IParameterChanges]
     // Returns count of Parameter changes in the list.
     function GetParameterCount:Int32; winapi;
     // Returns the queue at a given index.
@@ -2047,8 +2085,7 @@ type
   // - [optional]
   // Host callback interface, used with IUnitInfo.
   // Retrieve via queryInterface from IComponentHandler.
-  IUnitHandler = interface(FUnknown)
-    ['{4B5147F8-4654-486B-8DAB-30BA163A3C56}']
+  IUnitHandler = interface(FUnknown) [sIID_IUnitHandler]
     // Notify host when a module is selected in plug-in GUI.
     function NotifyUnitSelection(UnitID:TUnitID):tresult; winapi;
     // Tell host that the plug-in controller changed a program list (rename, load, PitchName changes).
@@ -2068,8 +2105,7 @@ type
   // The plug-in has the possibility to inform the host with notifyUnitByBusChange that something has
   // changed in the bus - unit assignment, the host then has to recall IUnitInfo::getUnitByBus in order
   // to get the new relations between busses and unit.
-  IUnitHandler2 = interface(FUnknown)
-    ['{F89F8CDF-699E-4BA5-96AA-C9A481452B01}']
+  IUnitHandler2 = interface(FUnknown) [sIID_IUnitHandler2]
     // Tell host that assignment Unit-Bus defined by IUnitInfo::getUnitByBus has changed.
     function NotifyUnitByBusChange:tresult; winapi;
   end;
@@ -2084,8 +2120,7 @@ type
   // - The root unit id has to be 0 (kRootUnitId).
   // - Each unit can reference one program list - this reference must not change.
   // - Each unit, using a program list, references one program of the list.
-  IUnitInfo = interface(FUnknown)
-    ['{3D4BD6B5-913A-4FD2-A886-E768A5EB92C1}']
+  IUnitInfo = interface(FUnknown) [sIID_IUnitInfo]
     // Returns the flat count of units.
     function GetUnitCount:Int32; winapi;
     // Gets UnitInfo for a given index in the flat list of unit.
@@ -2128,8 +2163,7 @@ type
   // - [optional]
   // A component can support program list data via this interface or/and
   // unit preset data (IUnitData).
-  IProgramListData = interface(FUnknown)
-    ['{8683B01F-7B35-4F70-A265-1DEC353AF4FF}']
+  IProgramListData = interface(FUnknown) [sIID_IProgramListData]
     // Returns kResultTrue if the given Program List ID supports Program Data.
     function ProgramDataSupported(ListID:TProgramListID):tresult; winapi;
     // Gets for a given program list ID and program index the program Data.
@@ -2145,8 +2179,7 @@ type
   // - [optional]
   // A component can support unit preset data via this interface or
   // program list data (IProgramListData).
-  IUnitData = interface(FUnknown)
-    ['{6C389611-D391-455D-B870-B83394A0EFDD}']
+  IUnitData = interface(FUnknown) [sIID_IUnitData]
     // Returns kResultTrue if the specified unit supports export and import of preset data.
     function UnitDataSupported(UnitID:TUnitID):tresult; winapi;
     // Gets the preset data for the specified unit.
@@ -2272,8 +2305,7 @@ type
   // and the getNoteExpressionValueByString method from a string to a normalized value.
   // When the note expression state changes (for example when switching presets) the plug-in needs
   // to inform the host about it via IComponentHandler::restartComponent (kNoteExpressionChanged).
-  INoteExpressionController = interface(FUnknown)
-    ['{B7F8F859-4123-4872-9116-95814F3721A3}']
+  INoteExpressionController = interface(FUnknown) [sIID_INoteExpressionController]
     // Returns number of supported note change types for event bus index and channel.
     function GetNoteExpressionCount(BusIndex:Int32; channel:Int16):Int32; winapi;
     // Returns note change type info.
@@ -2321,8 +2353,7 @@ type
   // When a (instrument) plug-in supports such interface, the host could get from the plug-in the current set
   // of used key switches (megatrig/articulation) for a given channel of a event bus and then automatically use them (like in Cubase 6) to
   // create VST Expression Map (allowing to associated symbol to a given articulation / key switch).
-  IKeyswitchController = interface(FUnknown)
-    ['{1F2F76D3-BFFB-4B96-B995-27A55EBCCEF4}']
+  IKeyswitchController = interface(FUnknown) [sIID_IKeyswitchController]
     // Returns number of supported key switches for event bus index and channel.
     function GetKeyswitchCount(BusIndex:Int32; channel:Int16):Int32 winapi;
     // Returns key switch info.
@@ -2444,8 +2475,7 @@ type
   // - [released: 3.0.0]
   // - [mandatory]
   // see TProcessData, TEvent
-  IEventList = interface
-    ['{3A2C4214-3463-49FE-B2C4-F397B9695A44}']
+  IEventList = interface(FUnknown) [sIID_IEventList]
     // Returns the count of events.
     function GetEventCount:Int32; winapi;
     // Gets parameter by index.
@@ -2630,8 +2660,7 @@ type
   // - [released: 3.0.0]
   // - [mandatory]
   // This interface must always be supported by audio processing plug-ins.
-  IAudioProcessor = interface(FUnknown)
-    ['{42043F99-B7DA-453C-A569-E79D9AAEC33D}']
+  IAudioProcessor = interface(FUnknown) [sIID_IAudioProcessor]
     // Try to set (host => plug-in) a wanted arrangement for inputs and outputs.
     // The host should always deliver the same number of input and output busses than the plug-in
     // needs (see IComponent::getBusCount). The plug-in has 3 possibilities to react on this
@@ -2709,8 +2738,7 @@ type
   // Each plug-in adding a latency (returning a none zero value for IAudioProcessor::getLatencySamples) will modify the input
   // presentation latency of the next plug-ins in the mixer routing graph and will modify the output presentation latency
   // of the previous plug-ins.
-  IAudioPresentationLatency = interface(FUnknown)
-    ['{309ECE78-EB7D-4FAE-8B22-25D909FD08B6}']
+  IAudioPresentationLatency = interface(FUnknown) [sIID_IAudioPresentationLatency]
     // Informs the plug-in about the Audio Presentation Latency in samples for a given direction (kInput/kOutput) and bus index.
     function SetAudioPresentationLatencySamples(kBusDir:TBusDirection; BusIndex:Int32; LatencyInSamples:UInt32):tresult; winapi;
   end;
@@ -2742,8 +2770,7 @@ type
   // plug-ins need which information.
   // Plug-Ins built with an earlier SDK version (< 3.7) will still get the old information, but the information
   // may not be as accurate as when using this interface.
-  IProcessContextRequirements = interface(FUnknown)
-    ['{2A654303-EF76-4E3D-95B5-FE83730EF6D0}']
+  IProcessContextRequirements = interface(FUnknown) [sIID_IProcessContextRequirements]
     function GetProcessContextRequirements:UInt32; winapi;
   end;
 
@@ -2803,8 +2830,7 @@ type
   // the queue to get full. If you need to get this information to the controller you can declare a
   // hidden parameter which you set to a special value and send this parameter change in your audio
   // process method.
-  IDataExchangeHandler = interface(FUnknown)
-    ['{36D551BD-6FF5-4F08-B48E-830D8BD5A03B}']
+  IDataExchangeHandler = interface(FUnknown) [sIID_IDataExchangeHandler]
     // open a new queue
     //
     // only allowed to be called from the main thread when the component is not active but
@@ -2856,8 +2882,7 @@ type
   // - [released: 3.7.9
   // - [optional]
   // The receiver interface is required to receive data from the realtime audio process via the IDataExchangeHandler.
-  IDataExchangeReceiver = interface(FUnknown)
-    ['{45A759DC-84FA-4907-ABCB-61752FC786B6}']
+  IDataExchangeReceiver = interface(FUnknown) [sIID_IDataExchangeReceiver]
     // queue opened notification
     //
     // called on the main thread when the processor has opened a queue
@@ -2901,8 +2926,7 @@ type
   // - [mandatory]
   // An attribute list associates values with a key (id: some predefined keys
   // can be found in presetAttributes).
-  IAttributeList = interface(FUnknown)
-    ['{1E5F0AEB-CC7F-4533-A254-401138AD5EE4}']
+  IAttributeList = interface(FUnknown) [sIID_IAttributeList]
     // Sets integer value
     function SetInt(id:TAttrID; value:Int64):tresult; winapi;
     // Gets integer value.
@@ -2930,8 +2954,7 @@ type
   // Interface to access preset meta information from stream, used, for example, in setState in order to inform the plug-in about
   // the current context in which the preset loading occurs (Project context or Preset load (see StateType))
   // or used to get the full file path of the loaded preset (if available).
-  IStreamAttributes = interface(FUnknown)
-    ['{D6CE2FFC-EFAF-4B8C-9E74-F1BB12DA44B4}']
+  IStreamAttributes = interface(FUnknown) [sIID_IStreamAttributes]
     // Gets filename (without file extension) of the stream.
     function GetFileName({Length=128}name:PChar16):tresult; winapi;
     // Gets meta information list.
@@ -2944,8 +2967,7 @@ type
   // - [released: 3.0.0]
   // - [mandatory]
   // Messages are sent from a VST controller component to a VST editor component and vice versa.
-  IMessage = interface(FUnknown)
-    ['{936F033B-C6C0-47DB-BB08-82F813C1E613}']
+  IMessage = interface(FUnknown) [sIID_IMessage]
     // Returns the message ID (for example "TextMessage").
     function GetMessageID:FIDString; winapi;
     // Sets a message ID (for example "TextMessage").
@@ -2962,8 +2984,7 @@ type
   // This interface is used for the communication of separate components.
   // Note that some hosts will place a proxy object between the components
   // so that they are not directly connected.
-  IConnectionPoint = interface(FUnknown)
-    ['{70A4156F-6E6E-4026-9891-48BFAA60D8D1}']
+  IConnectionPoint = interface(FUnknown) [sIID_IConnectionPoint]
     // Connects this instance with another connection point.
     function Connect(other:IConnectionPoint):tresult; winapi;
     // Disconnects a given connection point from this.
@@ -3015,8 +3036,7 @@ type
   // expression supported by the plug-in.
   // When the mapping changes (for example when switching presets) the plug-in needs
   // to inform the host about it via IComponentHandler::restartComponent (kNoteExpressionChanged).
-  INoteExpressionPhysicalUIMapping = interface(FUnknown)
-    ['{B03078FF-94D2-4AC8-90CC-D303D4133324}']
+  INoteExpressionPhysicalUIMapping = interface(FUnknown) [sIID_INoteExpressionPhysicalUIMapping]
     // Fills the list of mapped [physical UI (in) - note expression (out)] for a given bus index and channel.
     function GetPhysicalUIMapping(BusIndex:Int32; Channel:Int16; var list:TPhysicalUIMapList):tresult; winapi;
   end;
@@ -3040,8 +3060,7 @@ type
   // The plug-in should implement this interface if it needs to dynamically change between prefetchable or not.
   // By default (without implementing this interface) the host decides in which mode the plug-in is processed.
   // For more info about the prefetch processing mode check the ProcessModes::kPrefetch documentation.
-  IPrefetchableSupport = interface(FUnknown)
-    ['{8AE54FDA-E930-46B9-A285-55BCDC98E21E}']
+  IPrefetchableSupport = interface(FUnknown) [sIID_IPrefetchableSupport]
     // retrieve the current prefetch support. Use IComponentHandler::restartComponent
     // (kPrefetchableSupportChanged) to inform the host that this support has changed.
     function GetPrefetchableSupport(var prefetchable:TPrefetchableSupport):tresult; winapi;
@@ -3055,8 +3074,7 @@ type
   // It is highly recommended to implement this interface.
   // A host can implement important functionality when a plug-in supports this interface.
   // For example, all Steinberg hosts require this interface in order to support the "AI Knob".
-  IParameterFinder = interface(FUnknown)
-    ['{0F618302-215D-4587-A512-073C77B9D383}']
+  IParameterFinder = interface(FUnknown) [sIID_IParameterFinder]
     // Find out which parameter in plug-in view is at given position (relative to plug-in view).
     function FindParameter(xpos,ypos:Int32; var ResultTag:TParamID):tresult; winapi;
   end;
@@ -3093,8 +3111,7 @@ type
   //    - link which allows to jump directly to a subpage (another page)
   //    - more... See Vst::LayerType
   // This representation is implemented as XML text following the Document Type Definition (DTD): http://dtd.steinberg.net/VST-Remote-1.1.dtd
-  IXmlRepresentationController = interface(FUnknown)
-    ['{A81A0471-48C3-4DC4-AC30-C9E13C8393D5}']
+  IXmlRepresentationController = interface(FUnknown) [sIID_IXmlRepresentationController]
     // Retrieves a stream containing a XmlRepresentation for a wanted representation info
     function GetXmlRepresentationStream({in}const info:TRepresentationInfo; {out}stream:IBStream):tresult; winapi;
   end;
@@ -3105,8 +3122,7 @@ type
   // - [released: 3.0.0]
   // - [mandatory]
   // Basic VST host application interface.
-  IHostApplication = interface(FUnknown)
-    ['{58E595CC-DB2D-4969-8B6A-AF8C36A664E5}']
+  IHostApplication = interface(FUnknown) [sIID_IHostApplication]
     // Gets host application name.
     function GetName({Length=128}name:PChar16):tresult; winapi;
     // Creates host object (e.g. Vst::IMessage).
@@ -3120,8 +3136,7 @@ type
   // - [mandatory]
   // Informs the plug-in that a VST 3 to VST 2 wrapper is used between the plug-in and the real host.
   // Implemented by the VST 2 Wrapper.
-  IVst3ToVst2Wrapper = interface(FUnknown)
-    ['{29633AEC-1D1C-47E2-BB85-B97BD36EAC61}']
+  IVst3ToVst2Wrapper = interface(FUnknown) [sIID_IVst3ToVst2Wrapper]
   end;
 
   // VST 3 to AU Wrapper interface: Vst::IVst3ToAUWrapper
@@ -3131,8 +3146,7 @@ type
   // - [mandatory]
   // Informs the plug-in that a VST 3 to AU wrapper is used between the plug-in and the real host.
   // Implemented by the AU Wrapper.
-  IVst3ToAUWrapper = interface(FUnknown)
-    ['{A3B8C6C5-C095-4688-B091-6F0BB697AA44}']
+  IVst3ToAUWrapper = interface(FUnknown) [sIID_IVst3ToAUWrapper]
   end;
 
   // VST 3 to AAX Wrapper interface: Vst::IVst3ToAAXWrapper
@@ -3142,8 +3156,7 @@ type
   // - [mandatory]
   // Informs the plug-in that a VST 3 to AAX wrapper is used between the plug-in and the real host.
   // Implemented by the AAX Wrapper.
-  IVst3ToAAXWrapper = interface(FUnknown)
-    ['{6D319DC6-60C5-6242-B32C-951B93BEF4C6}']
+  IVst3ToAAXWrapper = interface(FUnknown) [sIID_IVst3ToAAXWrapper]
   end;
 
   // Wrapper MPE Support interface: Vst::IVst3WrapperMPESupport
@@ -3156,8 +3169,7 @@ type
   // will be one and the memberEndChannel will be 14.
   // As MPE is a subset of the VST3 Note Expression feature, mapping from the three MPE expressions is
   // handled via the INoteExpressionPhysicalUIMapping interface.
-  IVst3WrapperMPESupport = interface(FUnknown)
-    ['{44149067-42CF-4BF9-8800-B750F7359FE3}']
+  IVst3WrapperMPESupport = interface(FUnknown) [sIID_IVst3WrapperMPESupport]
     // enable or disable MPE processing
     // param state true to enable, false to disable MPE processing
     // return kResultTrue on success
@@ -3186,8 +3198,7 @@ type
   // - [released: 3.6.5]
   // - [optional]
   // Hosts can inform the plug-in about its current automation state (Read/Write/Nothing).
-  IAutomationState = interface(FUnknown)
-    ['{B4E8287F-1BB3-46AA-83A4-666768937BAB}']
+  IAutomationState = interface(FUnknown) [sIID_IAutomationState]
     // Sets the current Automation state.
     function SetAutomationState(state:TAutomationState):tresult; winapi;
   end;
@@ -3202,8 +3213,7 @@ type
   // mapping and inform the host via the IComponentHandler::restartComponent with the
   // kMidiCCAssignmentChanged flag.
   // Use this if you want to implement custom MIDI-Learn functionality in your plug-in.
-  IMidiLearn = interface(FUnknown)
-    ['{6B2449CC-4197-40B5-AB3C-79DAC5FE5C86}']
+  IMidiLearn = interface(FUnknown) [sIID_IMidiLearn]
     // Called on live input MIDI-CC change associated to a given bus index and MIDI channel
     function OnLiveMIDIControllerInput(BusIndex:Int32; Channel:Int16; MidiCC:TCtrlNumber):tresult; winapi;
   end;
@@ -3217,8 +3227,7 @@ type
   // The host can use this information, for example, for drawing a Gain Reduction meter in its own UI.
   // In order to get the plain value of this parameter, the host should use the IEditController::normalizedParamToPlain.
   // The host can automatically map parameters to dedicated UI controls, such as the wet-dry mix knob or Randomize button.
-  IParameterFunctionName = interface(FUnknown)
-    ['{6D21E1DC-9119-9D4B-A2A0-2FEF6C1AE55C}']
+  IParameterFunctionName = interface(FUnknown) [sIID_IParameterFunctionName]
     // Gets for the given unitID the associated paramID to a function Name.
     // Returns kResultFalse when no found parameter (paramID is set to kNoParamId in this case).
     function GetParameterIDFromFunctionName(UnitID:TUnitID; FuncName:FIDString; var ParamID:TParamID):tresult; winapi;
@@ -3230,8 +3239,7 @@ type
   // - [optional]
   // Allows a plug-in to ask the host if a given plug-in interface is supported/used by the host.
   // It is implemented by the hostContext given when the component is initialized.
-  IPlugInterfaceSupport = interface(FUnknown)
-    ['{4FB58B9E-9EAA-4E0F-AB36-1C1CCCB56FEA}']
+  IPlugInterfaceSupport = interface(FUnknown) [sIID_IPlugInterfaceSupport]
     // Returns kResultTrue if the associated interface to the given _iid is supported/used by the host.
     function IsPlugInterfaceSupported(const iid:TGuid):tresult; winapi;
   end;
@@ -3244,8 +3252,7 @@ type
   // - [released: 3.6.0]
   // - [optional]
   // Implemented by the InterAppAudio Wrapper.
-  IInterAppAudioHost = interface(FUnknown)
-    ['{0CE5743D-68DF-415E-AE28-5BD4E2CDC8FD}']
+  IInterAppAudioHost = interface(FUnknown) [sIID_IInterAppAudioHost]
     // get the size of the screen
     // param size size of the screen
     // param scale scale of the screen
@@ -3283,8 +3290,7 @@ type
   // - [plug imp]
   // - [extends IEditController]
   // - [released: 3.6.0]
-  IInterAppAudioConnectionNotification = interface(FUnknown)
-    ['{6020C72D-5FC2-4AA1-B095-0DB5D7D6D5CF}']
+  IInterAppAudioConnectionNotification = interface(FUnknown) [sIID_IInterAppAudioConnectionNotification]
     // called when the Inter-App Audio connection state changes
     // param newState true if an Inter-App Audio connection is established, otherwise false
     procedure OnInterAppAudioConnectionStateChange(NewState:TBool); winapi;
@@ -3318,8 +3324,7 @@ type
   // If the module contains a moduleinfo.json the host will ignore this class.
   // The class must write into the stream an UTF-8 encoded json description of the compatibility of
   // the other classes in the factory.
-  IPluginCompatibility = interface(FUnknown)
-    ['{4AFD4B6A-35D7-C240-A5C3-1414FB7D15E6}']
+  IPluginCompatibility = interface(FUnknown) [sIID_IPluginCompatibility]
     // get the compatibility stream
     // param stream the stream the plug-in must write the UTF8 encoded JSON5 compatibility string.
     // return kResultTrue on success
@@ -3439,79 +3444,6 @@ type
   end;
 
 const
-  sIID_FUnknown = '{00000000-0000-0000-C000-000000000046}';
-  sIID_IBStream = '{C3BF6EA2-3099-4752-9B6B-F9901EE33E9B}';
-  sIID_ISizeableStream = '{04F9549E-E02F-4E6E-87E8-6A8747F4E17F}';
-  sIID_IPluginBase = '{22888DDB-156E-45AE-8358-B34808190625}';
-  sIID_IPluginFactory = '{7A4D811C-5211-4A1F-AED9-D2EE0B43BF9F}';
-  sIID_IPluginFactory2 = '{0007B650-F24B-4C0B-A464-EDB9F00B2ABB}';
-  sIID_IPluginFactory3 = '{4555A2AB-C123-4E57-9B12-291036878931}';
-  sIID_IStringResult = '{550798BC-8720-49DB-8492-0A153B50B7A8}';
-  sIID_IString = '{F99DB7A3-0FC1-4821-800B-0CF98E348EDF}';
-  sIID_IUpdateHandler = '{F5246D56-8654-4d60-B026-AFB57B697B37}';
-  sIID_IDependent = '{EC5E9713-71FF-49C2-82DA-8520AC017E63}';
-  sIID_IPersistent = '{BA1A4637-3C9F-46D0-A65D-BA0EB85DA829}';
-  sIID_IAttributes = '{FA1E32F9-CA6D-46F5-A982-F956B1191B58}';
-  sIID_IAttributes2 = '{1382126A-FECA-4871-97D5-2A45B042AE99}';
-  sIID_IErrorContext = '{12BCD07B-7C69-4336-B7DA-77C3444A0CD0}';
-  sIID_ICloneable = '{D45406B9-3A2D-4443-9DAD-9BA985A1454B}';
-  sIID_IPlugFrame = '{01AF7F36-9346-A9AF-8D4D-A2A0ED0882A3}';
-  sIID_IPlugView = '{0725C35B-EA49-60D0-A615-1B522B755B29}';
-{$IFDEF LINUX}
-  sIID_IEventHandler = '{C9651E56-6F49-A013-813A-2C35654D7983}';
-  sIID_ITimerHandler = '{4FD9BD10-7447-4241-821F-AD8FECA72CA9}';
-  sIID_IRunLoop = '{6653C318-1A4F-7697-9C5B-83857A871389}';
-{$ENDIF}
-  sIID_IAttributeList = '{1E5F0AEB-CC7F-4533-A254-401138AD5EE4}';
-  sIID_IStreamAttributes = '{D6CE2FFC-EFAF-4B8C-9E74-F1BB12DA44B4}';
-  sIID_IUnitHandler = '{4B5147F8-4654-486B-8DAB-30BA163A3C56}';
-  sIID_IUnitHandler2 = '{F89F8CDF-699E-4BA5-96AA-C9A481452B01}';
-  sIID_IUnitInfo = '{3D4BD6B5-913A-4FD2-A886-E768A5EB92C1}';
-  sIID_IProgramListData = '{8683B01F-7B35-4F70-A265-1DEC353AF4FF}';
-  sIID_IUnitData = '{6C389611-D391-455D-B870-B83394A0EFDD}';
-  sIID_IContextMenu = '{2E93C863-0C9C-4588-97DB-ECF5AD17817D}';
-  sIID_IComponentHandler3 = '{69F11617-D26B-400D-A4B6-B9647B6EBBAB}';
-  sIID_IContextMenuTarget = '{3CDF2E75-85D3-4144-BF86-D36BD7C48940}';
-  sIID_IComponent = '{E831FF31-F2D5-4301-928E-BBEE25697802}';
-  sIID_IComponentHandler = '{93A0BEA3-0BD0-45DB-8E89-0B0CC1E46AC6}';
-  sIID_IComponentHandler2 = '{F040B4B3-A360-45EC-ABCD-C045B4D5A2CC}';
-  sIID_IComponentHandlerBusActivation = '{067D02C1-5B4E-274D-A92D-90FD6EAF7240}';
-  sIID_IProgress = '{00C9DC5B-9D90-4254-91A3-88C8B4E91B69}';
-  sIID_IEditController = '{DCD7BBE3-7742-448D-A874-AACC979C759E}';
-  sIID_IEditController2 = '{7F4EFE59-F320-4967-AC27-A3AEAFB63038}';
-  sIID_IMidiMapping = '{DF0FF9F7-49B7-4669-B63A-B7327ADBF5E5}';
-  sIID_IEditControllerHostEditing = '{C1271208-7059-4098-B9DD-34B36BB0195E}';
-  sIID_IComponentHandlerSystemTime = '{F9E53056-D155-4CD5-B769-5E1B7B0F7745}';
-  sIID_IParamValueQueue = '{01263A18-ED07-4F6F-98C9-D3564686F9BA}';
-  sIID_IParameterChanges = '{A4779663-0BB6-4A56-B443-84A8466FEB9D}';
-  sIID_INoteExpressionController = '{B7F8F859-4123-4872-9116-95814F3721A3}';
-  sIID_IKeyswitchController = '{1F2F76D3-BFFB-4B96-B995-27A55EBCCEF4}';
-  sIID_INoteExpressionPhysicalUIMapping = '{B03078FF-94D2-4AC8-90CC-D303D4133324}';
-  sIID_IEventList = '{3A2C4214-3463-49FE-B2C4-F397B9695A44}';
-  sIID_IAudioProcessor = '{42043F99-B7DA-453C-A569-E79D9AAEC33D}';
-  sIID_IAudioPresentationLatency = '{309ECE78-EB7D-4FAE-8B22-25D909FD08B6}';
-  sIID_IProcessContextRequirements = '{2A654303-EF76-4E3D-95B5-FE83730EF6D0}';
-  sIID_IDataExchangeHandler = '{36D551BD-6FF5-4F08-B48E-830D8BD5A03B}';
-  sIID_IDataExchangeReceiver = '{45A759DC-84FA-4907-ABCB-61752FC786B6}';
-  sIID_IMessage = '{936F033B-C6C0-47DB-BB08-82F813C1E613}';
-  sIID_IConnectionPoint = '{70A4156F-6E6E-4026-9891-48BFAA60D8D1}';
-  sIID_IPrefetchableSupport = '{8AE54FDA-E930-46B9-A285-55BCDC98E21E}';
-  sIID_IParameterFinder = '{0F618302-215D-4587-A512-073C77B9D383}';
-  sIID_IXmlRepresentationController = '{A81A0471-48C3-4DC4-AC30-C9E13C8393D5}';
-  sIID_IHostApplication = '{58E595CC-DB2D-4969-8B6A-AF8C36A664E5}';
-  sIID_IVst3ToVst2Wrapper = '{29633AEC-1D1C-47E2-BB85-B97BD36EAC61}';
-  sIID_IVst3ToAUWrapper = '{A3B8C6C5-C095-4688-B091-6F0BB697AA44}';
-  sIID_IVst3ToAAXWrapper = '{6D319DC6-60C5-6242-B32C-951B93BEF4C6}';
-  sIID_IVst3WrapperMPESupport = '{44149067-42CF-4BF9-8800-B750F7359FE3}';
-  sIID_IAutomationState = '{B4E8287F-1BB3-46AA-83A4-666768937BAB}';
-  sIID_IMidiLearn = '{6B2449CC-4197-40B5-AB3C-79DAC5FE5C86}';
-  sIID_IParameterFunctionName = '{6D21E1DC-9119-9D4B-A2A0-2FEF6C1AE55C}';
-  sIID_IPlugInterfaceSupport = '{4FB58B9E-9EAA-4E0F-AB36-1C1CCCB56FEA}';
-  sIID_IInterAppAudioHost = '{0CE5743D-68DF-415E-AE28-5BD4E2CDC8FD}';
-  sIID_IInterAppAudioConnectionNotification = '{6020C72D-5FC2-4AA1-B095-0DB5D7D6D5CF}';
-  sIID_IInterAppAudioPresetManager = '{ADE6FCC4-46C9-4E1D-B3B4-9A80C93FEFDD}';
-  sIID_IPluginCompatibility = '{4AFD4B6A-35D7-C240-A5C3-1414FB7D15E6}';
-
   IID_FUnknown:TGuid = sIID_FUnknown;
   IID_IBStream:TGuid = sIID_IBStream;
   IID_ISizeableStream:TGuid = sIID_ISizeableStream;
@@ -3535,6 +3467,7 @@ const
   IID_ITimerHandler:TGuid = sIID_ITimerHandler;
   IID_IRunLoop:TGuid = sIID_IRunLoop;
 {$endif}
+  IID_IPlugViewContentScaleSupport:TGuid = sIID_IPlugViewContentScaleSupport;
   IID_IAttributeList:TGuid = sIID_IAttributeList;
   IID_IStreamAttributes:TGuid = sIID_IStreamAttributes;
   IID_IUnitHandler:TGuid = sIID_IUnitHandler;
