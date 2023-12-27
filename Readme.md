@@ -18,7 +18,7 @@ Use Lazarus to open the `vst3pas.lpk` in `package`, and click `Add to project`.
 
 Add compiler directive `{$Interfaces CORBA}` in files which need the interfaces in VST3.
 
-Please use at least Lazarus 3.0 RC2, older versions have some bugs with modifier `winapi`.
+Please use Lazarus 3.0 and up, older versions have bugs with modifier `winapi`.
 
 ### Delphi
 
