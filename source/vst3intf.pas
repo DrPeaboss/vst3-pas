@@ -271,28 +271,22 @@ type
 {$endif}
 
   FVariant = record
-  public type
-    TVariantValueType = (
-      kInteger,
-      kFloat,
-      kString8,
-      kObject,
-      kOwner,
-      kString16,
-      kVariantValueTypeMax=15 // Align 2 Bytes
-    );
-    TVariantValueTypes = set of TVariantValueType;
-    TVariantValue = record
-    case byte of
+  public const
+    kEmpty    = 0;
+    kInteger  = 1;
+    kFloat    = 1 shl 1;
+    kString8  = 1 shl 2;
+    kObject   = 1 shl 3;
+    kOwner    = 1 shl 4;
+    kString16 = 1 shl 5;
+  public
+    Typ:Int16;
+    case Byte of
       0:(IntValue:Int64);
       1:(FloatValue:Double);
       2:(String8:PChar8);
       3:(String16:PChar16);
       4:({$ifdef DCC}[unsafe]{$endif} Obj:FUnknown);
-    end;
-  public
-    Types:TVariantValueTypes;
-    Value:TVariantValue;
   end;
 
 const
