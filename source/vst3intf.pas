@@ -2526,27 +2526,26 @@ type
   // next block again, a host that is dependent on a fixed processing block size can choose to neglect
   // this problem.
   TProcessContext = record
-  public type
-    TStatesAndFlag = (
-      kPlaying=1,     // currently playing
-      kCycleActive=2, // cycle is active
-      kRecording=3,   // currently recording
-      kSystemTimeValid=8, // systemTime contains valid information
-      kProjectTimeMusicValid=9, // projectTimeMusic contains valid information
-      kTempoValid=10,       // tempo contains valid information
-      kBarPositionValid=11, // barPositionMusic contains valid information
-      kCycleValid=12,       // cycleStartMusic and barPositionMusic contain valid information
-      kTimeSigValid=13,  // timeSigNumerator and timeSigDenominator contain valid information
-      kSmpteValid=14,    // smpteOffset and frameRate contain valid information
-      kClockValid=15,    // samplesToNextClock valid
-      kContTimeValid=17, // continousTimeSamples contains valid information
-      kChordValid=18,    // chord contains valid information
-      kStatesAndFlagMax=31
-    );
-    // Transport state & other flags
-    TStatesAndFlags = set of TStatesAndFlag;
+  public const
+    kPlaying=1 shl 1;     // currently playing
+    kCycleActive=1 shl 2; // cycle is active
+    kRecording=1 shl 3;   // currently recording
+
+    kSystemTimeValid=1 shl 8; // systemTime contains valid information
+    kContTimeValid=1 shl 17;  // continousTimeSamples contains valid information
+
+    kProjectTimeMusicValid=1 shl 9; // projectTimeMusic contains valid information
+    kBarPositionValid=1 shl 11;     // barPositionMusic contains valid information
+    kCycleValid=1 shl 12;           // cycleStartMusic and barPositionMusic contain valid information
+
+    kTempoValid=1 shl 10;    // tempo contains valid information
+    kTimeSigValid=1 shl 13;  // timeSigNumerator and timeSigDenominator contain valid information
+    kChordValid=1 shl 18;    // chord contains valid information
+
+    kSmpteValid=1 shl 14;    // smpteOffset and frameRate contain valid information
+    kClockValid=1 shl 15;    // samplesToNextClock valid
   public
-    State:TStatesAndFlags; // a combination of the values from TStatesAndFlags  // UInt32
+    State:UInt32; // a combination of the values from TStatesAndFlags
     SampleRate:Double;              // current sample rate (always valid)
     ProjectTimeSamples:TSamples;    // project time in samples (always valid)
     SystemTime:Int64;               // system time in nanoseconds (optional)
