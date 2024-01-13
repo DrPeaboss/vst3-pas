@@ -280,13 +280,13 @@ type
     kOwner    = 1 shl 4;
     kString16 = 1 shl 5;
   public
-    Typ:Int16;
+    &Type:Int16;
     case Byte of
       0:(IntValue:Int64);
       1:(FloatValue:Double);
       2:(String8:PChar8);
       3:(String16:PChar16);
-      4:({$ifdef DCC}[unsafe]{$endif} Obj:FUnknown);
+      4:({$ifdef DCC}[unsafe]{$endif} &Object:FUnknown);
   end;
 
 const
@@ -1382,7 +1382,7 @@ type
   IPlugView = interface(FUnknown) [sIID_IPlugView]
     // Is Platform UI Type supported
     // param type : IDString of platformUIType
-    function IsPlatformTypeSupported(Typ:FIDString):tresult; winapi;
+    function IsPlatformTypeSupported(&Type:FIDString):tresult; winapi;
     // The parent window of the view has been created, the (platform) representation of the view
     // should now be created as well.
     // Note that the parent is owned by the caller and you are not allowed to alter it in any way
@@ -1390,7 +1390,7 @@ type
     // Note that in this call the plug-in could call a IPlugFrame::resizeView ()!
     // param parent : platform handle of the parent window or view
     // param type : platformUIType which should be created
-    function Attached(Parent:Pointer; Typ:FIDString):tresult; winapi;
+    function Attached(Parent:Pointer; &Type:FIDString):tresult; winapi;
     // The parent window of the view is about to be destroyed.
     // You have to remove all your own views from the parent window or view.
     function Removed:tresult; winapi;
@@ -1778,7 +1778,7 @@ type
   // the user could request from the plug-in UI a given output bus activation.
   IComponentHandlerBusActivation = interface(FUnknown) [sIID_IComponentHandlerBusActivation]
     // request the host to activate or deactivate a specific bus.
-    function RequestBusActivation(Typ:TMediaType; dir:TBusDirection; index:Int32; state:TBool):tresult; winapi;
+    function RequestBusActivation(&Type:TMediaType; dir:TBusDirection; index:Int32; state:TBool):tresult; winapi;
   end;
 
 const
@@ -1875,7 +1875,7 @@ type
   IProgress = interface(FUnknown) [sIID_IProgress]
     // Start a new progress of a given type and optional Description. outID is as ID created by the
     // host to identify this newly created progress (for update and finish method)
-    function Start(typ:TProgressType; OptionalDescription:PWideChar; var OutID:UInt64):tresult; winapi;
+    function Start(&Type:TProgressType; OptionalDescription:PWideChar; var OutID:UInt64):tresult; winapi;
     // Update the progress value (normValue between [0, 1]) associated to the given id
     function Update(ID:UInt64; NormValue:TParamValue):tresult; winapi;
     // Finish the progress associated to the given id
@@ -2140,7 +2140,7 @@ type
     function SelectUnit(UnitID:TUnitID):tresult; winapi;
     // Gets the according unit if there is an unambiguous relation between a channel or a bus and a unit.
     // This method mainly is intended to find out which unit is related to a given MIDI input channel.
-    function GetUnitByBus(AType:TMediaType; dir:TBusDirection; BusIndex,channel:Int32;
+    function GetUnitByBus(&Type:TMediaType; dir:TBusDirection; BusIndex,channel:Int32;
       var UnitID:TUnitID):tresult; winapi;
     // Receives a preset data stream.
     // - If the component supports program list data (IProgramListData), the destination of the data
@@ -2387,7 +2387,7 @@ type
   // Data event specific data. Used in Event (union)
   TDataEvent = record
     Size:UInt32;  // size in bytes of the data block bytes
-    Typ:UInt32;   // type of this data block (only kMidiSysEx)
+    &Type:UInt32; // type of this data block (only kMidiSysEx)
     Bytes:PUInt8; // pointer to the data block
   end;
 
@@ -2451,7 +2451,7 @@ type
     SampleOffset:Int32; // sample frames related to the current block start sample position
     PPQPosition:TQuarterNotes; // position in project
     Flags:UInt16; // combination of EventFlags
-    Typ:UInt16; // a value from EventTypes
+    &Type:UInt16; // a value from EventTypes
     case byte of
       0:(NoteOn:TNoteOnEvent);   // type == kNoteOnEvent
       1:(NoteOff:TNoteOffEvent); // type == kNoteOffEvent
