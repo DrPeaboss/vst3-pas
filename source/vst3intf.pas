@@ -700,162 +700,159 @@ type
   PSample64   = ^TSample64;
   PPSample64  = ^PSample64;
 
-  //TSpeakerArrangement = UInt64; // Bitset of speakers
-  //TSpeaker            = UInt64; // Bit for one speaker
-
-  TSpeaker = (
-    kSpeakerL,     // 1 << 0  Left (L)
-    kSpeakerR,     // 1 << 1  Right (R)
-    kSpeakerC,     // 1 << 2  Center (C)
-    kSpeakerLfe,   // 1 << 3  Subbass (Lfe)
-    kSpeakerLs,    // 1 << 4  Left Surround (Ls)
-    kSpeakerRs,    // 1 << 5  Right Surround (Rs)
-    kSpeakerLc,    // 1 << 6  Left of Center (Lc) - Front Left Center
-    kSpeakerRc,    // 1 << 7  Right of Center (Rc) - Front Right Center
-    kSpeakerS,     // 1 << 8  Surround (S)
-    kSpeakerCs = kSpeakerS, // Center of Surround (Cs) - Back Center - Surround (S)
-    kSpeakerSl,    // 1 << 9  Side Left (Sl)
-    kSpeakerSr,    // 1 << 10 Side Right (Sr)
-    kSpeakerTc,    // 1 << 11 Top Center Over-head, Top Middle (Tc)
-    kSpeakerTfl,   // 1 << 12 Top Front Left (Tfl)
-    kSpeakerTfc,   // 1 << 13 Top Front Center (Tfc)
-    kSpeakerTfr,   // 1 << 14 Top Front Right (Tfr)
-    kSpeakerTrl,   // 1 << 15 Top Rear/Back Left (Trl)
-    kSpeakerTrc,   // 1 << 16 Top Rear/Back Center (Trc)
-    kSpeakerTrr,   // 1 << 17 Top Rear/Back Right (Trr)
-    kSpeakerLfe2,  // 1 << 18 Subbass 2 (Lfe2)
-    kSpeakerM,     // 1 << 19 Mono (M)
-    kSpeakerACN0,  // 1 << 20 Ambisonic ACN 0
-    kSpeakerACN1,  // 1 << 21 Ambisonic ACN 1
-    kSpeakerACN2,  // 1 << 22 Ambisonic ACN 2
-    kSpeakerACN3,  // 1 << 23 Ambisonic ACN 3
-    kSpeakerTsl,   // 1 << 24 Top Side Left (Tsl)
-    kSpeakerTsr,   // 1 << 25 Top Side Right (Tsr)
-    kSpeakerLcs,   // 1 << 26 Left of Center Surround (Lcs) - Back Left Center
-    kSpeakerRcs,   // 1 << 27 Right of Center Surround (Rcs) - Back Right Center
-    kSpeakerBfl,   // 1 << 28 Bottom Front Left (Bfl)
-    kSpeakerBfc,   // 1 << 29 Bottom Front Center (Bfc)
-    kSpeakerBfr,   // 1 << 30 Bottom Front Right (Bfr)
-    kSpeakerPl,    // 1 << 31 Proximity Left (Pl)
-    kSpeakerPr,    // 1 << 32 Proximity Right (Pr)
-    kSpeakerBsl,   // 1 << 33 Bottom Side Left (Bsl)
-    kSpeakerBsr,   // 1 << 34 Bottom Side Right (Bsr)
-    kSpeakerBrl,   // 1 << 35 Bottom Rear Left (Brl)
-    kSpeakerBrc,   // 1 << 36 Bottom Rear Center (Brc)
-    kSpeakerBrr,   // 1 << 37 Bottom Rear Right (Brr)
-    kSpeakerACN4,  // 1 << 38 Ambisonic ACN 4
-    kSpeakerACN5,  // 1 << 39 Ambisonic ACN 5
-    kSpeakerACN6,  // 1 << 40 Ambisonic ACN 6
-    kSpeakerACN7,  // 1 << 41 Ambisonic ACN 7
-    kSpeakerACN8,  // 1 << 42 Ambisonic ACN 8
-    kSpeakerACN9,  // 1 << 43 Ambisonic ACN 9
-    kSpeakerACN10, // 1 << 44 Ambisonic ACN 10
-    kSpeakerACN11, // 1 << 45 Ambisonic ACN 11
-    kSpeakerACN12, // 1 << 46 Ambisonic ACN 12
-    kSpeakerACN13, // 1 << 47 Ambisonic ACN 13
-    kSpeakerACN14, // 1 << 48 Ambisonic ACN 14
-    kSpeakerACN15, // 1 << 49 Ambisonic ACN 15
-    kSpeakerACN16, // 1 << 50 Ambisonic ACN 16
-    kSpeakerACN17, // 1 << 51 Ambisonic ACN 17
-    kSpeakerACN18, // 1 << 52 Ambisonic ACN 18
-    kSpeakerACN19, // 1 << 53 Ambisonic ACN 19
-    kSpeakerACN20, // 1 << 54 Ambisonic ACN 20
-    kSpeakerACN21, // 1 << 55 Ambisonic ACN 21
-    kSpeakerACN22, // 1 << 56 Ambisonic ACN 22
-    kSpeakerACN23, // 1 << 57 Ambisonic ACN 23
-    kSpeakerACN24, // 1 << 58 Ambisonic ACN 24
-    kSpeakerLw,    // 1 << 59 Left Wide (Lw)
-    kSpeakerRw,    // 1 << 60 Right Wide (Rw)
-    kSpeakerMax=63 // max number for align
-  );
-  TSpeakerArrangement = set of TSpeaker;
+  TSpeaker            = UInt64; // Bit for one speaker
+  TSpeakerArrangement = UInt64; // Bitset of speakers
   PSpeakerArrangement = ^TSpeakerArrangement;
 
 const
   kNoParamID = TParamID($FFFFFFFF); // default for uninitialized parameter ID
 
-  kMono           = [kSpeakerM]; // M
-  kStereo         = [kSpeakerL,kSpeakerR]; // L R
-  kStereoWide     = [kSpeakerLw,kSpeakerRw]; // Lw Rw
-  kStereoSurround = [kSpeakerLs,kSpeakerRs]; // Ls Rs
-  kStereoCenter   = [kSpeakerLc,kSpeakerRc]; // Lc Rc
-  kStereoSide     = [kSpeakerSl,kSpeakerSr]; // Sl Sr
-  kStereoCLfe     = [kSpeakerC,kSpeakerLfe]; // C Lfe
-  kStereoTF       = [kSpeakerTfl,kSpeakerTfr]; // Tfl Tfr
-  kStereoTS       = [kSpeakerTsl,kSpeakerTsr]; // Tsl Tsr
-  kStereoTR       = [kSpeakerTrl,kSpeakerTrr]; // Trl Trr
-  kStereoBF       = [kSpeakerBfl,kSpeakerBfr]; // Bfl Bfr
-  kCineFront      = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLc,kSpeakerRc]; // L R C Lc Rc
+  kSpeakerL = 1 shl 0;      // Left (L)
+  kSpeakerR = 1 shl 1;      // Right (R)
+  kSpeakerC = 1 shl 2;      // Center (C)
+  kSpeakerLfe = 1 shl 3;    // Subbass (Lfe)
+  kSpeakerLs = 1 shl 4;     // Left Surround (Ls)
+  kSpeakerRs = 1 shl 5;     // Right Surround (Rs)
+  kSpeakerLc = 1 shl 6;     // Left of Center (Lc) - Front Left Center
+  kSpeakerRc = 1 shl 7;     // Right of Center (Rc) - Front Right Center
+  kSpeakerS = 1 shl 8;      // Surround (S)
+  kSpeakerCs = kSpeakerS;   // Center of Surround (Cs) - Back Center - Surround (S)
+  kSpeakerSl = 1 shl 9;     // Side Left (Sl)
+  kSpeakerSr = 1 shl 10;    // Side Right (Sr)
+  kSpeakerTc = 1 shl 11;    // Top Center Over-head; Top Middle (Tc)
+  kSpeakerTfl = 1 shl 12;   // Top Front Left (Tfl)
+  kSpeakerTfc = 1 shl 13;   // Top Front Center (Tfc)
+  kSpeakerTfr = 1 shl 14;   // Top Front Right (Tfr)
+  kSpeakerTrl = 1 shl 15;   // Top Rear/Back Left (Trl)
+  kSpeakerTrc = 1 shl 16;   // Top Rear/Back Center (Trc)
+  kSpeakerTrr = 1 shl 17;   // Top Rear/Back Right (Trr)
+  kSpeakerLfe2 = 1 shl 18;  // Subbass 2 (Lfe2)
+  kSpeakerM = 1 shl 19;     // Mono (M)
+  kSpeakerACN0 = 1 shl 20;  // Ambisonic ACN 0
+  kSpeakerACN1 = 1 shl 21;  // Ambisonic ACN 1
+  kSpeakerACN2 = 1 shl 22;  // Ambisonic ACN 2
+  kSpeakerACN3 = 1 shl 23;  // Ambisonic ACN 3
+  kSpeakerTsl = 1 shl 24;   // Top Side Left (Tsl)
+  kSpeakerTsr = 1 shl 25;   // Top Side Right (Tsr)
+  kSpeakerLcs = 1 shl 26;   // Left of Center Surround (Lcs) - Back Left Center
+  kSpeakerRcs = 1 shl 27;   // Right of Center Surround (Rcs) - Back Right Center
+  kSpeakerBfl = 1 shl 28;   // Bottom Front Left (Bfl)
+  kSpeakerBfc = 1 shl 29;   // Bottom Front Center (Bfc)
+  kSpeakerBfr = 1 shl 30;   // Bottom Front Right (Bfr)
+  kSpeakerPl = 1 shl 31;    // Proximity Left (Pl)
+  kSpeakerPr = 1 shl 32;    // Proximity Right (Pr)
+  kSpeakerBsl = 1 shl 33;   // Bottom Side Left (Bsl)
+  kSpeakerBsr = 1 shl 34;   // Bottom Side Right (Bsr)
+  kSpeakerBrl = 1 shl 35;   // Bottom Rear Left (Brl)
+  kSpeakerBrc = 1 shl 36;   // Bottom Rear Center (Brc)
+  kSpeakerBrr = 1 shl 37;   // Bottom Rear Right (Brr)
+  kSpeakerACN4 = 1 shl 38;  // Ambisonic ACN 4
+  kSpeakerACN5 = 1 shl 39;  // Ambisonic ACN 5
+  kSpeakerACN6 = 1 shl 40;  // Ambisonic ACN 6
+  kSpeakerACN7 = 1 shl 41;  // Ambisonic ACN 7
+  kSpeakerACN8 = 1 shl 42;  // Ambisonic ACN 8
+  kSpeakerACN9 = 1 shl 43;  // Ambisonic ACN 9
+  kSpeakerACN10 = 1 shl 44; // Ambisonic ACN 10
+  kSpeakerACN11 = 1 shl 45; // Ambisonic ACN 11
+  kSpeakerACN12 = 1 shl 46; // Ambisonic ACN 12
+  kSpeakerACN13 = 1 shl 47; // Ambisonic ACN 13
+  kSpeakerACN14 = 1 shl 48; // Ambisonic ACN 14
+  kSpeakerACN15 = 1 shl 49; // Ambisonic ACN 15
+  kSpeakerACN16 = 1 shl 50; // Ambisonic ACN 16
+  kSpeakerACN17 = 1 shl 51; // Ambisonic ACN 17
+  kSpeakerACN18 = 1 shl 52; // Ambisonic ACN 18
+  kSpeakerACN19 = 1 shl 53; // Ambisonic ACN 19
+  kSpeakerACN20 = 1 shl 54; // Ambisonic ACN 20
+  kSpeakerACN21 = 1 shl 55; // Ambisonic ACN 21
+  kSpeakerACN22 = 1 shl 56; // Ambisonic ACN 22
+  kSpeakerACN23 = 1 shl 57; // Ambisonic ACN 23
+  kSpeakerACN24 = 1 shl 58; // Ambisonic ACN 24
+  kSpeakerLw = 1 shl 59;    // Left Wide (Lw)
+  kSpeakerRw = 1 shl 60;    // Right Wide (Rw)
+
+
+  kMono           = kSpeakerM; // M
+  kStereo         = kSpeakerL or kSpeakerR; // L R
+  kStereoWide     = kSpeakerLw or kSpeakerRw; // Lw Rw
+  kStereoSurround = kSpeakerLs or kSpeakerRs; // Ls Rs
+  kStereoCenter   = kSpeakerLc or kSpeakerRc; // Lc Rc
+  kStereoSide     = kSpeakerSl or kSpeakerSr; // Sl Sr
+  kStereoCLfe     = kSpeakerC or kSpeakerLfe; // C Lfe
+  kStereoTF       = kSpeakerTfl or kSpeakerTfr; // Tfl Tfr
+  kStereoTS       = kSpeakerTsl or kSpeakerTsr; // Tsl Tsr
+  kStereoTR       = kSpeakerTrl or kSpeakerTrr; // Trl Trr
+  kStereoBF       = kSpeakerBfl or kSpeakerBfr; // Bfl Bfr
+  kCineFront      = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLc or kSpeakerRc; // L R C Lc Rc
 
   // L R C
-  k30Cine =  [kSpeakerL,kSpeakerR,kSpeakerC]; // 3.0
+  k30Cine =  kSpeakerL or kSpeakerR or kSpeakerC; // 3.0
   // L R C Lfe
-  k31Cine =  k30Cine + [kSpeakerLfe]; // 3.1
+  k31Cine =  k30Cine or kSpeakerLfe; // 3.1
   // L R S
-  k30Music = [kSpeakerL,kSpeakerR,kSpeakerCs];
+  k30Music = kSpeakerL or kSpeakerR or kSpeakerCs;
   // L R Lfe S
-  k31Music = k30Music + [kSpeakerLfe];
+  k31Music = k30Music or kSpeakerLfe;
   // L R C S
-  k40Cine =  [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerCs]; // LCRS
+  k40Cine =  kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerCs; // LCRS
   // L R C Lfe S
-  k41Cine =  k40Cine + [kSpeakerLfe]; // LCRS+Lfe
+  k41Cine =  k40Cine or kSpeakerLfe; // LCRS or Lfe
   // L R Ls Rs
-  k40Music = [kSpeakerL,kSpeakerR,kSpeakerLs,kSpeakerRs]; // 4.0 (Quadro)
+  k40Music = kSpeakerL or kSpeakerR or kSpeakerLs or kSpeakerRs; // 4.0 (Quadro)
   // L R Lfe Ls Rs
-  k41Music = k40Music + [kSpeakerLfe]; // 4.1 (Quadro+Lfe)
+  k41Music = k40Music or kSpeakerLfe; // 4.1 (Quadro or Lfe)
   // L R C Ls Rs
-  k50 =      [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs]; // 5.0 (ITU 0+5+0.0 Sound System B)
+  k50 =      kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs; // 5.0 (ITU 0 or 5 or 0.0 Sound System B)
   // L R C Lfe Ls Rs
-  k51 =      k50 + [kSpeakerLfe]; // 5.1 (ITU 0+5+0.1 Sound System B)
+  k51 =      k50 or kSpeakerLfe; // 5.1 (ITU 0 or 5 or 0.1 Sound System B)
   // L R C Ls Rs Cs
-  k60Cine =  [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerCs];
+  k60Cine =  kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerCs;
   // L R C Lfe Ls Rs Cs
-  k61Cine =  k60Cine + [kSpeakerLfe];
+  k61Cine =  k60Cine or kSpeakerLfe;
   // L R Ls Rs Sl Sr
-  k60Music = [kSpeakerL,kSpeakerR,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr];
+  k60Music = kSpeakerL or kSpeakerR or kSpeakerLs or kSpeakerRs or kSpeakerSl or kSpeakerSr;
   // L R Lfe Ls Rs Sl Sr
-  k61Music = k60Music + [kSpeakerLfe];
+  k61Music = k60Music or kSpeakerLfe;
   // L R C Ls Rs Lc Rc
-  k70Cine =  [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc];
+  k70Cine =  kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerLc or kSpeakerRc;
   // L R C Lfe Ls Rs Lc Rc
-  k71Cine =  k70Cine + [kSpeakerLfe];
+  k71Cine =  k70Cine or kSpeakerLfe;
   k71CineFullFront = k71Cine;
   // L R C Ls Rs Sl Sr
-  k70Music = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr]; // (ITU 0+7+0.0 Sound System I)
+  k70Music = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerSl or kSpeakerSr; // (ITU 0 or 7 or 0.0 Sound System I)
   // L R C Lfe Ls Rs Sl Sr
-  k71Music = k70Music + [kSpeakerLfe]; // (ITU 0+7+0.1 Sound System I)
+  k71Music = k70Music or kSpeakerLfe; // (ITU 0 or 7 or 0.1 Sound System I)
 
   // L R C Lfe Ls Rs Lcs Rcs
-  k71CineFullRear = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerLcs,kSpeakerRcs];
+  k71CineFullRear = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLfe or kSpeakerLs or kSpeakerRs or kSpeakerLcs or kSpeakerRcs;
   k71CineSideFill = k71Music;
   // L R C Lfe Ls Rs Pl Pr
-  k71Proximity = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerPl,kSpeakerPr];
+  k71Proximity = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLfe or kSpeakerLs or kSpeakerRs or kSpeakerPl or kSpeakerPr;
 
   // L R C Ls Rs Lc Rc Cs
-  k80Cine =  [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,kSpeakerCs];
+  k80Cine =  kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerLc or kSpeakerRc or kSpeakerCs;
   // L R C Lfe Ls Rs Lc Rc Cs
-  k81Cine =  k80Cine + [kSpeakerLfe];
+  k81Cine =  k80Cine or kSpeakerLfe;
   // L R C Ls Rs Cs Sl Sr
-  k80Music = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerCs,kSpeakerSl,kSpeakerSr];
+  k80Music = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerCs or kSpeakerSl or kSpeakerSr;
   // L R C Lfe Ls Rs Cs Sl Sr
-  k81Music = k80Music + [kSpeakerLfe];
+  k81Music = k80Music or kSpeakerLfe;
   // L R C Ls Rs Lc Rc Sl Sr
-  k90Cine =  [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,kSpeakerSl,kSpeakerSr];
+  k90Cine =  kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerLc or kSpeakerRc or kSpeakerSl or kSpeakerSr;
   // L R C Lfe Ls Rs Lc Rc Sl Sr
-  k91Cine =  k90Cine + [kSpeakerLfe];
+  k91Cine =  k90Cine or kSpeakerLfe;
   // L R C Ls Rs Lc Rc Cs Sl Sr
-  k100Cine = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,kSpeakerCs,kSpeakerSl,kSpeakerSr];
+  k100Cine = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerLc or kSpeakerRc or kSpeakerCs or kSpeakerSl or kSpeakerSr;
   // L R C Lfe Ls Rs Lc Rc Cs Sl Sr
-  k101Cine = k100Cine + [kSpeakerLfe];
+  k101Cine = k100Cine or kSpeakerLfe;
 
   // First-Order with Ambisonic Channel Number (ACN) ordering and SN3D normalization (4 channels)
-  kAmbi1stOrderACN = [kSpeakerACN0,kSpeakerACN1,kSpeakerACN2,kSpeakerACN3];
+  kAmbi1stOrderACN = kSpeakerACN0 or kSpeakerACN1 or kSpeakerACN2 or kSpeakerACN3;
   // Second-Order with Ambisonic Channel Number (ACN) ordering and SN3D normalization (9 channels)
-  kAmbi2cdOrderACN = kAmbi1stOrderACN+[kSpeakerACN4,kSpeakerACN5,kSpeakerACN6,kSpeakerACN7,kSpeakerACN8];
+  kAmbi2cdOrderACN = kAmbi1stOrderACN or kSpeakerACN4 or kSpeakerACN5 or kSpeakerACN6 or kSpeakerACN7 or kSpeakerACN8;
   // Third-Order with Ambisonic Channel Number (ACN) ordering and SN3D normalization (16 channels)
-  kAmbi3rdOrderACN = kAmbi2cdOrderACN+[kSpeakerACN9,kSpeakerACN10,kSpeakerACN11,kSpeakerACN12,kSpeakerACN13,kSpeakerACN14,kSpeakerACN15];
+  kAmbi3rdOrderACN = kAmbi2cdOrderACN or kSpeakerACN9 or kSpeakerACN10 or kSpeakerACN11 or kSpeakerACN12 or kSpeakerACN13 or kSpeakerACN14 or kSpeakerACN15;
   // Fourth-Order with Ambisonic Channel Number (ACN) ordering and SN3D normalization (25 channels)
-  kAmbi4thOrderACN = kAmbi3rdOrderACN+[kSpeakerACN16,kSpeakerACN17,kSpeakerACN18,kSpeakerACN19,kSpeakerACN20,kSpeakerACN21,kSpeakerACN22,kSpeakerACN23,kSpeakerACN24];
+  kAmbi4thOrderACN = kAmbi3rdOrderACN or kSpeakerACN16 or kSpeakerACN17 or kSpeakerACN18 or kSpeakerACN19 or kSpeakerACN20 or kSpeakerACN21 or kSpeakerACN22 or kSpeakerACN23 or kSpeakerACN24;
   // Fifth-Order with Ambisonic Channel Number (ACN) ordering and SN3D normalization (36 channels)
   kAmbi5thOrderACN = $000FFFFFFFFF;
   // Sixth-Order with Ambisonic Channel Number (ACN) ordering and SN3D normalization (49 channels)
@@ -866,152 +863,139 @@ const
   // 3D formats
 
   // L R Ls Rs Tfl Tfr Trl Trr    4.0.4
-  k80Cube = [kSpeakerL,kSpeakerR,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  k80Cube = kSpeakerL or kSpeakerR or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr;
   k40_4   = k80Cube;
   // L R C Lfe Ls Rs Cs Tc        6.1.1
-  k71CineTopCenter = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerCs,kSpeakerTc];
+  k71CineTopCenter = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLfe or kSpeakerLs or kSpeakerRs or kSpeakerCs or kSpeakerTc;
   // L R C Lfe Ls Rs Cs Tfc       6.1.1
-  k71CineCenterHigh = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerCs,kSpeakerTfc];
-  // L R C Ls Rs Tfl Tfr          5.0.2 (ITU 2+5+0.0 Sound System C)
-  k70CineFrontHigh = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr];
+  k71CineCenterHigh = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLfe or kSpeakerLs or kSpeakerRs or kSpeakerCs or kSpeakerTfc;
+  // L R C Ls Rs Tfl Tfr          5.0.2 (ITU 2 or 5 or 0.0 Sound System C)
+  k70CineFrontHigh = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfr;
   k70MPEG3D = k70CineFrontHigh;
   k50_2 = k70CineFrontHigh;
-  // L R C Lfe Ls Rs Tfl Tfr      5.1.2 (ITU 2+5+0.1 Sound System C)
-  k71CineFrontHigh = k70CineFrontHigh+[kSpeakerLfe];
+  // L R C Lfe Ls Rs Tfl Tfr      5.1.2 (ITU 2 or 5 or 0.1 Sound System C)
+  k71CineFrontHigh = k70CineFrontHigh or kSpeakerLfe;
   k71MPEG3D = k71CineFrontHigh;
   k51_2 = k71CineFrontHigh;
   // L R C Ls Rs Tsl Tsr          5.0.2 (Side)
-  k70CineSideHigh = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTsl,kSpeakerTsr];
+  k70CineSideHigh = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerTsl or kSpeakerTsr;
   k50_2_TS = k70CineSideHigh;
   // L R C Lfe Ls Rs Tsl Tsr      5.1.2 (Side)
-  k71CineSideHigh = k70CineSideHigh + [kSpeakerLfe];
+  k71CineSideHigh = k70CineSideHigh  or  kSpeakerLfe;
   k51_2_TS = k71CineSideHigh;
   // L R Lfe Ls Rs Tfl Tfc Tfr Bfc    4.1.3.1
-  k81MPEG3D = [kSpeakerL,kSpeakerR,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerBfc];
+  k81MPEG3D = kSpeakerL or kSpeakerR or kSpeakerLfe or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfc or kSpeakerTfr or kSpeakerBfc;
   k41_4_1 = k81MPEG3D;
 
-  // L R C Ls Rs Tfl Tfr Trl Trr        5.0.4 (ITU 4+5+0.0 Sound System D)
-  k90 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  // L R C Ls Rs Tfl Tfr Trl Trr        5.0.4 (ITU 4 or 5 or 0.0 Sound System D)
+  k90 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr;
   k50_4 = k90;
   // L R C Lfe Ls Rs Tfl Tfr Trl Trr    5.1.4
-  k91 = k90 + [kSpeakerLfe];
+  k91 = k90 or kSpeakerLfe;
   k51_4 = k91;
-  // L R C Ls Rs Tfl Tfr Trl Trr Bfc        5.0.4.1 (ITU 4+5+1.0 Sound System E)
-  k50_4_1 = k50_4 + [kSpeakerBfc];
-  // L R C Lfe Ls Rs Tfl Tfr Trl Trr Bfc    5.1.4.1 (ITU 4+5+1.1 Sound System E)
-  k51_4_1 = k50_4_1 + [kSpeakerLfe];
+  // L R C Ls Rs Tfl Tfr Trl Trr Bfc        5.0.4.1 (ITU 4 or 5 or 1.0 Sound System E)
+  k50_4_1 = k50_4 or kSpeakerBfc;
+  // L R C Lfe Ls Rs Tfl Tfr Trl Trr Bfc    5.1.4.1 (ITU 4 or 5 or 1.1 Sound System E)
+  k51_4_1 = k50_4_1 or kSpeakerLfe;
 
   // L R C Ls Rs Sl Sr Tsl Tsr        7.0.2
-  k70_2 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTsl,kSpeakerTsr];
+  k70_2 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerSl or kSpeakerSr or kSpeakerTsl or kSpeakerTsr;
   // L R C Lfe Ls Rs Sl Sr Tsl Tsr    7.1.2
-  k71_2 = k70_2 + [kSpeakerLfe];
+  k71_2 = k70_2 or kSpeakerLfe;
   k91Atmos = k71_2; // 9.1 Dolby Atmos (3D)
-  // L R C Ls Rs Sl Sr Tfl Tfr Trc    7.0.3 (ITU 3+7+0.0 Sound System F)
-  k70_3 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrc];
-  // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trc Lfe2    7.2.3 (ITU 3+7+0.2 Sound System F)
-  k72_3 = k70_3 + [kSpeakerLfe,kSpeakerLfe2];
-  // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr         7.0.4 (ITU 4+7+0.0 Sound System J)
-  k70_4 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
-  // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trl Trr     7.1.4 (ITU 4+7+0.1 Sound System J)
-  k71_4 = k70_4 + [kSpeakerLfe];
+  // L R C Ls Rs Sl Sr Tfl Tfr Trc    7.0.3 (ITU 3 or 7 or 0.0 Sound System F)
+  k70_3 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerSl or kSpeakerSr or kSpeakerTfl or kSpeakerTfr or kSpeakerTrc;
+  // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trc Lfe2    7.2.3 (ITU 3 or 7 or 0.2 Sound System F)
+  k72_3 = k70_3 or kSpeakerLfe or kSpeakerLfe2;
+  // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr         7.0.4 (ITU 4 or 7 or 0.0 Sound System J)
+  k70_4 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerSl or kSpeakerSr or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr;
+  // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trl Trr     7.1.4 (ITU 4 or 7 or 0.1 Sound System J)
+  k71_4 = k70_4 or kSpeakerLfe;
   k111MPEG3D = k71_4;
   // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr Tsl Tsr        7.0.6
-  k70_6 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTfl,
-    kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerTsl,kSpeakerTsr];
+  k70_6 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerSl or kSpeakerSr or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerTsl or kSpeakerTsr;
   // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trl Trr Tsl Tsr    7.1.6
-  k71_6 = k70_6 + [kSpeakerLfe];
+  k71_6 = k70_6 or kSpeakerLfe;
 
-  // L R C Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr                9.0.4 (ITU 4+9+0.0 Sound System G)
-  k90_4 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,kSpeakerSl,
-    kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
-  // L R C Lfe Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr            9.1.4 (ITU 4+9+0.1 Sound System G)
-  k91_4 = k90_4 + [kSpeakerLfe];
+  // L R C Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr                9.0.4 (ITU 4 or 9 or 0.0 Sound System G)
+  k90_4 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerLc or kSpeakerRc or kSpeakerSl or kSpeakerSr or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr;
+  // L R C Lfe Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr            9.1.4 (ITU 4 or 9 or 0.1 Sound System G)
+  k91_4 = k90_4 or kSpeakerLfe;
   // L R C Lfe Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr Tsl Tsr    9.0.6
-  k90_6 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,kSpeakerSl,
-    kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerTsl,kSpeakerTsr];
+  k90_6 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerLc or kSpeakerRc or kSpeakerSl or kSpeakerSr or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerTsl or kSpeakerTsr;
   // L R C Lfe Ls Rs Lc Rc Sl Sr Tfl Tfr Trl Trr Tsl Tsr    9.1.6
-  k91_6 = k90_6 + [kSpeakerLfe];
+  k91_6 = k90_6 or kSpeakerLfe;
 
   // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr Lw Rw                9.0.4 (Dolby)
-  k90_4_W = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLw,kSpeakerRw,kSpeakerSl,kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  k90_4_W = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerLw or kSpeakerRw or kSpeakerSl or kSpeakerSr or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr;
   // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trl Trr Lw Rw            9.1.4 (Dolby)
-  k91_4_W = k90_4_W + [kSpeakerLfe];
+  k91_4_W = k90_4_W or kSpeakerLfe;
   // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr Tsl Tsr Lw Rw        9.0.6 (Dolby)
-  k90_6_W = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLw,kSpeakerRw,kSpeakerSl,kSpeakerSr,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerTsl,kSpeakerTsr];
+  k90_6_W = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerLw or kSpeakerRw or kSpeakerSl or kSpeakerSr or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerTsl or kSpeakerTsr;
   // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trl Trr Tsl Tsr Lw Rw    9.1.6 (Dolby)
-  k91_6_W = k90_6_W + [kSpeakerLfe];
+  k91_6_W = k90_6_W or kSpeakerLfe;
 
   // L R C Ls Rs Tc Tfl Tfr Trl Trr              5.0.5 (10.0 Auro-3D)
-  k100 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTc,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  k100 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerTc or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr;
   k50_5 = k100;
   // L R C Lfe Ls Rs Tc Tfl Tfr Trl Trr          5.1.5 (10.1 Auro-3D)
-  k101 = k100 + [kSpeakerLfe];
+  k101 = k100 or kSpeakerLfe;
   k101MPEG3D = k101;
   k51_5 = k101;
   // L R C Lfe Ls Rs Tfl Tfc Tfr Trl Trr Lfe2    5.2.5
-  k102 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfc,
-    kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerLfe2];
+  k102 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLfe or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfc or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerLfe2;
   k52_5 = k102;
   // L R C Ls Rs Tc Tfl Tfc Tfr Trl Trr          5.0.6 (11.0 Auro-3D)
-  k110 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTc,kSpeakerTfl,kSpeakerTfc,
-    kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  k110 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerTc or kSpeakerTfl or kSpeakerTfc or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr;
   k50_6 = k110;
   // L R C Lfe Ls Rs Tc Tfl Tfc Tfr Trl Trr      5.1.6 (11.1 Auro-3D)
-  k111 = k110 + [kSpeakerLfe];
+  k111 = k110 or kSpeakerLfe;
   k51_6 = k111;
 
   // L R C Lfe Ls Rs Lc Rc Tfl Tfc Tfr Trl Trr Lfe2    7.2.5
-  k122 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,
-    kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerLfe2];
+  k122 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLfe or kSpeakerLs or kSpeakerRs or kSpeakerLc or kSpeakerRc or kSpeakerTfl or kSpeakerTfc or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerLfe2;
   k72_5 = k122;
   // L R C Ls Rs Sl Sr Tc Tfl Tfc Tfr Trl Trr          7.0.6 (13.0 Auro-3D)
-  k130 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTc,
-    kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  k130 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerSl or kSpeakerSr or kSpeakerTc or kSpeakerTfl or kSpeakerTfc or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr;
   // L R C Lfe Ls Rs Sl Sr Tc Tfl Tfc Tfr Trl Trr      7.1.6 (13.1 Auro-3D)
-  k131 = k130 + [kSpeakerLfe];
+  k131 = k130 or kSpeakerLfe;
 
   // L R Ls Rs Sl Sr Tfl Tfr Trl Trr Bfl Bfr Brl Brr   6.0.4.4
-  k140 = [kSpeakerL,kSpeakerR,kSpeakerLs,kSpeakerRs,kSpeakerSl,kSpeakerSr,kSpeakerTfl,kSpeakerTfr,
-    kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr,kSpeakerBrl,kSpeakerBrr];
+  k140 = kSpeakerL or kSpeakerR or kSpeakerLs or kSpeakerRs or kSpeakerSl or kSpeakerSr or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerBfl or kSpeakerBfr or kSpeakerBrl or kSpeakerBrr;
   k60_4_4 = k140;
 
-  // L R C Ls Rs Lc Rc Cs Sl Sr Tc Tfl Tfc Tfr Trl Trc Trr Tsl Tsr Bfl Bfc Bfr    10.0.9.3 (ITU 9+10+3.0 Sound System H)
-  k220 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,kSpeakerCs,
-    kSpeakerSl,kSpeakerSr,kSpeakerTc,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,kSpeakerTrc,
-    kSpeakerTrr,kSpeakerTsl,kSpeakerTsr,kSpeakerBfl,kSpeakerBfc,kSpeakerBfr];
+  // L R C Ls Rs Lc Rc Cs Sl Sr Tc Tfl Tfc Tfr Trl Trc Trr Tsl Tsr Bfl Bfc Bfr    10.0.9.3 (ITU 9 or 10 or 3.0 Sound System H)
+  k220 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerLc or kSpeakerRc or kSpeakerCs or kSpeakerSl or kSpeakerSr or kSpeakerTc or kSpeakerTfl or kSpeakerTfc or kSpeakerTfr or kSpeakerTrl or kSpeakerTrc or kSpeakerTrr or kSpeakerTsl or kSpeakerTsr or kSpeakerBfl or kSpeakerBfc or kSpeakerBfr;
   k100_9_3 = k220;
-  // L R C Lfe Ls Rs Lc Rc Cs Sl Sr Tc Tfl Tfc Tfr Trl Trc Trr Lfe2 Tsl Tsr Bfl Bfc Bfr    10.2.9.3 (ITU 9+10+3.2 Sound System H)
-  k222 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLfe,kSpeakerLs,kSpeakerRs,kSpeakerLc,kSpeakerRc,
-    kSpeakerCs,kSpeakerSl,kSpeakerSr,kSpeakerTc,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,
-    kSpeakerTrc,kSpeakerTrr,kSpeakerLfe2,kSpeakerTsl,kSpeakerTsr,kSpeakerBfl,kSpeakerBfc,kSpeakerBfr];
+  // L R C Lfe Ls Rs Lc Rc Cs Sl Sr Tc Tfl Tfc Tfr Trl Trc Trr Lfe2 Tsl Tsr Bfl Bfc Bfr    10.2.9.3 (ITU 9 or 10 or 3.2 Sound System H)
+  k222 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLfe or kSpeakerLs or kSpeakerRs or kSpeakerLc or kSpeakerRc or kSpeakerCs or kSpeakerSl or kSpeakerSr or kSpeakerTc or kSpeakerTfl or kSpeakerTfc or kSpeakerTfr or kSpeakerTrl or kSpeakerTrc or kSpeakerTrr or kSpeakerLfe2 or kSpeakerTsl or kSpeakerTsr or kSpeakerBfl or kSpeakerBfc or kSpeakerBfr;
   k102_9_3 = k222;
 
   // L R C Ls Rs Tfl Tfc Tfr Trl Trr Bfl Bfc Bfr        5.0.5.3
-  k50_5_3 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,
-    kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfc,kSpeakerBfr];
+  k50_5_3 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfc or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerBfl or kSpeakerBfc or kSpeakerBfr;
   // L R C Lfe Ls Rs Tfl Tfc Tfr Trl Trr Bfl Bfc Bfr    5.1.5.3
-  k51_5_3 = k50_5_3 + [kSpeakerLfe];
+  k51_5_3 = k50_5_3 or kSpeakerLfe;
   // L R C Ls Rs Tsl Tsr Bfl Bfr                        5.0.2.2
-  k50_2_2 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTsl,kSpeakerTsr,kSpeakerBfl,kSpeakerBfr];
+  k50_2_2 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerTsl or kSpeakerTsr or kSpeakerBfl or kSpeakerBfr;
   // L R C Ls Rs Tfl Tfr Trl Trr Bfl Bfr                5.0.4.2
-  k50_4_2 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr];
+  k50_4_2 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerBfl or kSpeakerBfr;
   // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr Bfl Bfr          7.0.4.2
-  k70_4_2 = k50_4_2 + [kSpeakerSl,kSpeakerSr];
+  k70_4_2 = k50_4_2 or kSpeakerSl or kSpeakerSr;
 
   // L R C Ls Rs Tfl Tfc Tfr Trl Trr                5.0.5.0 (Sony 360RA)
-  k50_5_Sony = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr];
+  k50_5_Sony = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfc or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr;
   // C Sl Sr Cs Tsl Tsr Bsl Bsr                     4.0.2.2 (Sony 360RA)
-  k40_2_2 = [kSpeakerC,kSpeakerSl,kSpeakerSr,kSpeakerCs,kSpeakerTsl,kSpeakerTsr,kSpeakerBsl,kSpeakerBsr];
+  k40_2_2 = kSpeakerC or kSpeakerSl or kSpeakerSr or kSpeakerCs or kSpeakerTsl or kSpeakerTsr or kSpeakerBsl or kSpeakerBsr;
   // L R Ls Rs Tfl Tfr Trl Trr Bfl Bfr              4.0.4.2 (Sony 360RA)
-  k40_4_2 = [kSpeakerL,kSpeakerR,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr];
+  k40_4_2 = kSpeakerL or kSpeakerR or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerBfl or kSpeakerBfr;
   // L R C Ls Rs Tfl Tfc Tfr Bfl Bfr                5.0.3.2 (Sony 360RA)
-  k50_3_2 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerBfl,kSpeakerBfr];
+  k50_3_2 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfc or kSpeakerTfr or kSpeakerBfl or kSpeakerBfr;
   // L R C Tfl Tfc Tfr Trl Trr Bfl Bfr              3.0.5.2 (Sony 360RA)
-  k30_5_2 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerTfl,kSpeakerTfc,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr];
+  k30_5_2 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerTfl or kSpeakerTfc or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerBfl or kSpeakerBfr;
   // L R Ls Rs Tfl Tfr Trl Trr Bfl Bfr Brl Brr      4.0.4.4 (Sony 360RA)
-  k40_4_4 = [kSpeakerL,kSpeakerR,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr,kSpeakerBrl,kSpeakerBrr];
+  k40_4_4 = kSpeakerL or kSpeakerR or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerBfl or kSpeakerBfr or kSpeakerBrl or kSpeakerBrr;
   // L R C Ls Rs Tfl Tfr Trl Trr Bfl Bfr Brl Brr    5.0.4.4 (Sony 360RA)
-  k50_4_4 = [kSpeakerL,kSpeakerR,kSpeakerC,kSpeakerLs,kSpeakerRs,kSpeakerTfl,kSpeakerTfr,kSpeakerTrl,kSpeakerTrr,kSpeakerBfl,kSpeakerBfr,kSpeakerBrl,kSpeakerBrr];
+  k50_4_4 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr or kSpeakerBfl or kSpeakerBfr or kSpeakerBrl or kSpeakerBrr;
 
 
   // Speaker Arrangement String Representation.
