@@ -2,7 +2,7 @@
   The Object Pascal(FPC and Delphi) bindings of VST 3 API.
   Original API is at <https://github.com/steinbergmedia/vst3_pluginterfaces>
 
-  Current API version is 3.7.9 (2023/10/09).
+  Current API version is 3.7.10 (2024/01/18).
 
   This unit is converted from part of VST 3 API,
   constains the main constants, data structures and interfaces.
@@ -41,17 +41,18 @@ type
 { VST Versions }
 
 const
-  kVstVersionString = 'VST 3.7.9'; // SDK version for TPClassInfo2
+  kVstVersionString = 'VST 3.7.10'; // SDK version for TPClassInfo2
 
   kVstVersionMajor  = 3;
   kVstVersionMinor  = 7;
-  kVstVersionSub    = 9;
+  kVstVersionSub    = 10;
 
   VST_VERSION = kVstVersionMajor shl 16 or kVstVersionMinor shl 8 or kVstVersionSub;
 
   // Versions History which allows to write such code:
   // {$IF VST_VERSION >= VST_3_6_5_VERSION}
 
+  VST_3_7_10_VERSION = $03070A;
   VST_3_7_9_VERSION  = $030709;
   VST_3_7_8_VERSION  = $030708;
   VST_3_7_7_VERSION  = $030707;
@@ -82,6 +83,7 @@ const
   SDKVersionMinor   = kVstVersionMinor;
   SDKVersionSub     = kVstVersionSub;
   SDKVersion        = VST_VERSION;
+  SDKVersion_3_7_10 = VST_3_7_10_VERSION;
   SDKVersion_3_7_9  = VST_3_7_9_VERSION;
   SDKVersion_3_7_8  = VST_3_7_8_VERSION;
   SDKVersion_3_7_7  = VST_3_7_7_VERSION;
@@ -681,8 +683,12 @@ type
   TBusType       = Int32;  // bus type (main/aux)
   TIOMode        = Int32;  // I/O mode (see vst3IoMode)
   TUnitID        = Int32;  // unit identifier
-  TParamValue    = Double; // parameter value type
-  TParamID       = UInt32; // parameter identifier
+
+  TParamValue    = Double; // parameter value type: normalized value => [0.0, 1.0]
+  // parameter identifier: value in range [0, 0x7FFFFFFF].
+  // The range [0x80000000, 0xFFFFFFFF], is reserved for host application.
+  TParamID       = UInt32;
+
   TProgramListID = Int32;  // program list identifier
   TCtrlNumber    = Int16;  // MIDI controller number (see ControllerNumbers for allowed values)
   TQuarterNotes  = Double; // time expressed in quarter notes
@@ -705,7 +711,9 @@ type
   PSpeakerArrangement = ^TSpeakerArrangement;
 
 const
-  kNoParamID = TParamID($FFFFFFFF); // default for uninitialized parameter ID
+  kNoParamId  = $FFFFFFFF; // default for uninitialized parameter ID
+  kMinParamId = 0;         // value min for a parameter ID
+  kMaxParamId = $7FFFFFFF; // value max for a parameter ID
 
   kSpeakerL = 1 shl 0;      // Left (L)
   kSpeakerR = 1 shl 1;      // Right (R)
@@ -3875,15 +3883,20 @@ type
   public const
     kFx                   = 'Fx';            // others type (not categorized)
     kFxAnalyzer           = 'Fx|Analyzer';   // Scope, FFT-Display, Loudness Processing...
+    kFxBass               = 'Fx|Bass';       // Tools dedicated to Bass Guitar
+    kFxChannelStrip       = 'Fx|Channel Strip'; // Tools dedicated to Channel Strip
     kFxDelay              = 'Fx|Delay';      // Delay, Multi-tap Delay, Ping-Pong Delay...
     kFxDistortion         = 'Fx|Distortion'; // Amp Simulator, Sub-Harmonic, SoftClipper...
+    kFxDrums              = 'Fx|Drums';      // Tools dedicated to Drums...
     kFxDynamics           = 'Fx|Dynamics';   // Compressor, Expander, Gate, Limiter, Maximizer, Tape Simulator, EnvelopeShaper...
     kFxEQ                 = 'Fx|EQ';         // Equalization, Graphical EQ...
     kFxFilter             = 'Fx|Filter';     // WahWah, ToneBooster, Specific Filter,...
     kFxGenerator          = 'Fx|Generator';  // Tone Generator, Noise Generator...
+    kFxGuitar             = 'Fx|Guitar';     // Tools dedicated to Guitar
     kFxInstrument         = 'Fx|Instrument'; // Fx which could be loaded as Instrument too
     kFxInstrumentExternal = 'Fx|Instrument|External'; // Fx which could be loaded as Instrument too and is external (wrapped Hardware)
     kFxMastering          = 'Fx|Mastering';   // Dither, Noise Shaping,...
+    kFxMicrophone         = 'Fx|Microphone';  // Tools dedicated to Microphone
     kFxModulation         = 'Fx|Modulation';  // Phaser, Flanger, Chorus, Tremolo, Vibrato, AutoPan, Rotary, Cloner...
     kFxNetwork            = 'Fx|Network';     // using Network
     kFxPitchShift         = 'Fx|Pitch Shift'; // Pitch Processing, Pitch Correction, Vocal Tuning...
@@ -3892,7 +3905,7 @@ type
     kFxSpatial            = 'Fx|Spatial';     // MonoToStereo, StereoEnhancer,...
     kFxSurround           = 'Fx|Surround';    // dedicated to surround processing: LFE Splitter, Bass Manager...
     kFxTools              = 'Fx|Tools';       // Volume, Mixer, Tuner...
-    kFxVovals             = 'Fx|Vocals';      // Tools dedicated to vocals
+    kFxVovals             = 'Fx|Vocals';      // Tools dedicated to Vocals
 
     kInstrument             = 'Instrument';          // Effect used as instrument (sound generator), not as insert
     kInstrumentDrum         = 'Instrument|Drum';     // Instrument for Drum sounds
