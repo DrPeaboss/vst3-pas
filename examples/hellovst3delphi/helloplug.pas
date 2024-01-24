@@ -304,7 +304,7 @@ end;
 constructor THelloFactory.Create;
 begin
   // Initialize the information of factory and classes
-  FFactoryInfo.Init('Peacoor Zomboss','https://github.com/drpzboss','mailto:peazomboss@outlook.com');
+  FFactoryInfo.Init('Peacoor Zomboss','https://github.com/DrPeaboss/vst3-pas','mailto:PeaZomboss@outlook.com');
   FClassProcessor.Init(CID_HelloProcessor,kManyInstances,kDistributable,kVstAudioEffectClass,
     'Fx','HelloVst3Delphi','Peacoor Zomboss','0.0.1',kVstVersionString);
   FClassController.Init(CID_HelloController,kManyInstances,0,kVstComponentControllerClass,
