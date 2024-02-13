@@ -24,7 +24,6 @@ unit VST3Intf;
 {$ifdef FPC}
   {$mode delphi}
   {$Interfaces CORBA} // Use CORBA interface in FPC
-  {$WARN 3031 off : Values in enumeration types have to be ascending}
 {$endif}
 
 interface
