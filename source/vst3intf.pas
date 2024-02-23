@@ -777,7 +777,7 @@ const
   kSpeakerLw = 1 shl 59;    // Left Wide (Lw)
   kSpeakerRw = 1 shl 60;    // Right Wide (Rw)
 
-
+  kEmpty          = 0; // empty arrangement
   kMono           = kSpeakerM; // M
   kStereo         = kSpeakerL or kSpeakerR; // L R
   kStereoWide     = kSpeakerLw or kSpeakerRw; // Lw Rw
