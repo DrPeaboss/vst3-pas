@@ -148,10 +148,10 @@ const
   kPlatformStringLinux = 'Linux';
 {$if defined(MSWINDOWS)}
   kPlatformString = kPlatformStringWin;
-{$elseif defined(DARWIN) or defined(MACOS)}
-  kPlatformString = kPlatformStringMac;
 {$elseif defined(IOS)}
   kPlatformString = kPlatformStringIOS;
+{$elseif defined(DARWIN) or defined(MACOS) or defined(OSX)}
+  kPlatformString = kPlatformStringMac;
 {$elseif defined(LINUX)}
   kPlatformString = kPlatformStringLinux;
 {$endif}
