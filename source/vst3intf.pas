@@ -1310,9 +1310,9 @@ type
     Top:Int32;
     Right:Int32;
     Bottom:Int32;
-    procedure Init(AWidth,AHeight:Int32);
-    function GetWidth:Int32;
-    function GetHeight:Int32;
+    constructor Create(AWidth,AHeight:Int32);
+    function GetWidth:Int32;inline;
+    function GetHeight:Int32;inline;
     property Width:Int32 read GetWidth;
     property Height:Int32 read GetHeight;
   end;
@@ -4169,7 +4169,7 @@ end;
 
 { TViewRect }
 
-procedure TViewRect.Init(AWidth,AHeight:Int32);
+constructor TViewRect.Create(AWidth,AHeight:Int32);
 begin
   Left:=0;
   Top:=0;
