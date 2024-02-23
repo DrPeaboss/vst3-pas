@@ -394,7 +394,7 @@ type
     Url:TURLName;        // e.g. "http://www.steinberg.de"
     Email:TEmailName;    // e.g. "info@steinberg.de"
     Flags:Int32;
-    procedure Init(const _Vendor,_Url,_Email:AnsiString; _Flags:Int32=kDefaultFactoryFlags);
+    constructor Create(const _Vendor,_Url,_Email:AnsiString; _Flags:Int32=kDefaultFactoryFlags);
   end;
 
   PPClassInfo = ^TPClassInfo;
@@ -430,7 +430,7 @@ type
     Vendor:TVendorName; // overwrite vendor information from factory info
     Version:TVersionName; // Version string (e.g. "1.0.0.512" with Major.Minor.Subversion.Build)
     SdkVersion:TVersionName; // SDK version used to build this class (e.g. "VST 3.0")
-    procedure Init(const _CID:TGuid; _Cardinality:Int32; _ClassFlags:UInt32;
+    constructor Create(const _CID:TGuid; _Cardinality:Int32; _ClassFlags:UInt32;
       const _Category,_SubCategories,_Name,_Vendor,_Version,_SdkVersion:AnsiString);
   end;
 
@@ -454,7 +454,7 @@ type
     Vendor:TVendorNameW; // overwrite vendor information from factory info
     Version:TVersionNameW; // Version string (e.g. "1.0.0.512" with Major.Minor.Subversion.Build)
     SdkVersion:TVersionNameW; // SDK version used to build this class (e.g. "VST 3.0")
-    procedure FromInfo2(const ci2:TPClassInfo2);
+    constructor FromInfo2(const ci2:TPClassInfo2);
   end;
 
   // Class factory that any plug-in defines for creating class instances: IPluginFactory
@@ -4128,7 +4128,7 @@ uses
 
 { TPFactoryInfo }
 
-procedure TPFactoryInfo.Init(const _Vendor,_Url,_Email:AnsiString; _Flags:Int32);
+constructor TPFactoryInfo.Create(const _Vendor,_Url,_Email:AnsiString; _Flags:Int32);
 begin
   {$ifdef DCC}AnsiStrings.{$endif}StrPLCopy(Vendor,_Vendor,kVendorSize);
   {$ifdef DCC}AnsiStrings.{$endif}StrPLCopy(Url,_Url,kURLSize);
@@ -4138,7 +4138,7 @@ end;
 
 { TPClassInfo2 }
 
-procedure TPClassInfo2.Init(const _CID:TGuid; _Cardinality:Int32; _ClassFlags:UInt32;
+constructor TPClassInfo2.Create(const _CID:TGuid; _Cardinality:Int32; _ClassFlags:UInt32;
   const _Category,_SubCategories,_Name,_Vendor,_Version,_SdkVersion:AnsiString);
 begin
   CID:=_CID;
@@ -4154,7 +4154,7 @@ end;
 
 { PClassInfoW }
 
-procedure PClassInfoW.FromInfo2(const ci2:TPClassInfo2);
+constructor PClassInfoW.FromInfo2(const ci2:TPClassInfo2);
 begin
   CID:=ci2.CID;
   Cardinality:=ci2.Cardinality;
