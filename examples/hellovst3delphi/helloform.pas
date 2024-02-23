@@ -119,7 +119,7 @@ function THelloPlugView.GetSize(size:PViewRect):tresult; winapi;
 begin
   if size=nil then
     Exit(kInvalidArgument);
-  size^.Init(FForm.Width,FForm.Height);
+  size^.Create(FForm.Width,FForm.Height);
   Result:=kResultOk;
 end;
 
