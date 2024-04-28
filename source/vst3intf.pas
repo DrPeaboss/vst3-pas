@@ -2,7 +2,7 @@
   The Object Pascal(FPC and Delphi) bindings of VST 3 API.
   Original API is at <https://github.com/steinbergmedia/vst3_pluginterfaces>
 
-  Current API version is 3.7.10 (2024/01/18).
+  Current API version is 3.7.11 (2024/04/22).
 
   This unit is converted from part of VST 3 API,
   constains the main constants, data structures and interfaces.
@@ -40,17 +40,18 @@ type
 { VST Versions }
 
 const
-  kVstVersionString = 'VST 3.7.10'; // SDK version for TPClassInfo2
+  kVstVersionString = 'VST 3.7.11'; // SDK version for TPClassInfo2
 
   kVstVersionMajor  = 3;
   kVstVersionMinor  = 7;
-  kVstVersionSub    = 10;
+  kVstVersionSub    = 11;
 
   VST_VERSION = kVstVersionMajor shl 16 or kVstVersionMinor shl 8 or kVstVersionSub;
 
   // Versions History which allows to write such code:
   // {$IF VST_VERSION >= VST_3_6_5_VERSION}
 
+  VST_3_7_11_VERSION = $03070B;
   VST_3_7_10_VERSION = $03070A;
   VST_3_7_9_VERSION  = $030709;
   VST_3_7_8_VERSION  = $030708;
@@ -82,6 +83,7 @@ const
   SDKVersionMinor   = kVstVersionMinor;
   SDKVersionSub     = kVstVersionSub;
   SDKVersion        = VST_VERSION;
+  SDKVersion_3_7_11 = VST_3_7_11_VERSION;
   SDKVersion_3_7_10 = VST_3_7_10_VERSION;
   SDKVersion_3_7_9  = VST_3_7_9_VERSION;
   SDKVersion_3_7_8  = VST_3_7_8_VERSION;
@@ -252,6 +254,7 @@ const
   GUID_IInterAppAudioConnectionNotification = '{6020C72D-5FC2-4AA1-B095-0DB5D7D6D5CF}';
   GUID_IInterAppAudioPresetManager = '{ADE6FCC4-46C9-4E1D-B3B4-9A80C93FEFDD}';
   GUID_IPluginCompatibility = '{4AFD4B6A-35D7-C240-A5C3-1414FB7D15E6}';
+  GUID_IRemapParamID = '{2B88021E-6286-B646-B49D-F76A5663061C}';
 
 type
 {$ifndef FPC}
@@ -1707,6 +1710,16 @@ const
   // See IKeyswitchController
   // [SDK 3.7.3]
   kKeyswitchChanged = 1 shl 10;
+  // Mapping of ParamID has changed
+  // The Plug-in informs the host that its parameters ID has changed. This has to be called by the
+  // edit controller in the method setComponentState or setState (during projects loading) when the
+  // plug-in detects that the given state was associated to an older version of the plug-in, or to a
+  // plug-in to replace (for ex. migrating VST2 => VST3), with a different set of parameter IDs, then
+  // the host could remap any used parameters like automation by asking the IRemapParamID interface
+  // (which extends IEditController).
+  // See IRemapParamID
+  // [SDK 3.7.11]
+  kParamIDMappingChanged = 1 shl 11;
 
 type
   // Host callback interface for an edit controller: Vst::IComponentHandler
@@ -3315,6 +3328,25 @@ type
     function GetCompatibilityJSON(stream:IBStream):tresult; winapi;
   end;
 
+  // Extended IEditController interface for a component.
+  // - [plug imp]
+  // - [extends IEditController]
+  // - [released: 3.7.11]
+  // - [optional]
+  // When replacing one plug-in with another, the host can ask the new plug-in for remapping paramIDs to
+  // new ones.
+  IRemapParamID = interface(FUnknown) [GUID_IRemapParamID]
+    // Retrieve the appropriate paramID for a specific plug-in UID and paramID (or index for VST 2 plug-ins).
+    // The retrieved paramID should match the one it replaces, maintaining the same
+    // behavior during automation playback. Called in UI-Thread context.
+    // [in] PluginToReplaceUID - TUID of plug-in (processor) that will be replaced
+    // [in] OldParamID - paramID (or index for VST 2 plug-ins) to be replaced
+    // [out] NewParamID - contains the associated paramID to be used
+    // Return kResultTrue means that a compatible parameter is available
+    // Return kResultFalse means that NO compatible parameter is available
+    function GetCompatibleParamID(const PluginToReplaceUID:TGuid; OldParamID:TParamID; out NewParamID:TParamID):tresult; winapi;
+  end;
+
 {$ifdef FPC} {$pop} {$else} {$A+} {$endif}
 
 { Others }
@@ -3501,6 +3533,7 @@ const
   IID_IInterAppAudioConnectionNotification:TGuid = GUID_IInterAppAudioConnectionNotification;
   IID_IInterAppAudioPresetManager:TGuid = GUID_IInterAppAudioPresetManager;
   IID_IPluginCompatibility:TGuid = GUID_IPluginCompatibility;
+  IID_IRemapParamID:TGuid = GUID_IRemapParamID;
 
 type
   // Predefined Preset Attributes
