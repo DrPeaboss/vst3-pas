@@ -2,7 +2,7 @@
   The Object Pascal(FPC and Delphi) bindings of VST 3 API.
   Original API is at <https://github.com/steinbergmedia/vst3_pluginterfaces>
 
-  Current API version is 3.7.11 (2024/04/22).
+  Current API version is 3.7.12 (2024/07/23).
 
   This unit is converted from part of VST 3 API,
   constains the main constants, data structures and interfaces.
@@ -40,17 +40,18 @@ type
 { VST Versions }
 
 const
-  kVstVersionString = 'VST 3.7.11'; // SDK version for TPClassInfo2
+  kVstVersionString = 'VST 3.7.12'; // SDK version for TPClassInfo2
 
   kVstVersionMajor  = 3;
   kVstVersionMinor  = 7;
-  kVstVersionSub    = 11;
+  kVstVersionSub    = 12;
 
   VST_VERSION = kVstVersionMajor shl 16 or kVstVersionMinor shl 8 or kVstVersionSub;
 
   // Versions History which allows to write such code:
   // {$IF VST_VERSION >= VST_3_6_5_VERSION}
 
+  VST_3_7_12_VERSION = $03070C;
   VST_3_7_11_VERSION = $03070B;
   VST_3_7_10_VERSION = $03070A;
   VST_3_7_9_VERSION  = $030709;
@@ -83,6 +84,7 @@ const
   SDKVersionMinor   = kVstVersionMinor;
   SDKVersionSub     = kVstVersionSub;
   SDKVersion        = VST_VERSION;
+  SDKVersion_3_7_12 = VST_3_7_12_VERSION;
   SDKVersion_3_7_11 = VST_3_7_11_VERSION;
   SDKVersion_3_7_10 = VST_3_7_10_VERSION;
   SDKVersion_3_7_9  = VST_3_7_9_VERSION;
@@ -913,12 +915,16 @@ const
   // L R C Lfe Ls Rs Sl Sr Tsl Tsr    7.1.2
   k71_2 = k70_2 or kSpeakerLfe;
   k91Atmos = k71_2; // 9.1 Dolby Atmos (3D)
+  // L R C Ls Rs Sl Sr Tfl Tfr        7.0.2 (~ITU 2+7+0.0)
+  k70_2_TF = k70Music or kSpeakerTfl or kSpeakerTfr;
+  // L R C Lfe Ls Rs Sl Sr Tfl Tfr    7.1.2 (~ITU 2+7+0.1)
+  k71_2_TF = k70_2_TF or kSpeakerLfe;
   // L R C Ls Rs Sl Sr Tfl Tfr Trc    7.0.3 (ITU 3 or 7 or 0.0 Sound System F)
-  k70_3 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerSl or kSpeakerSr or kSpeakerTfl or kSpeakerTfr or kSpeakerTrc;
+  k70_3 = k70_2_TF or kSpeakerTrc;
   // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trc Lfe2    7.2.3 (ITU 3 or 7 or 0.2 Sound System F)
   k72_3 = k70_3 or kSpeakerLfe or kSpeakerLfe2;
   // L R C Ls Rs Sl Sr Tfl Tfr Trl Trr         7.0.4 (ITU 4 or 7 or 0.0 Sound System J)
-  k70_4 = kSpeakerL or kSpeakerR or kSpeakerC or kSpeakerLs or kSpeakerRs or kSpeakerSl or kSpeakerSr or kSpeakerTfl or kSpeakerTfr or kSpeakerTrl or kSpeakerTrr;
+  k70_4 = k70_2_TF or kSpeakerTrl or kSpeakerTrr;
   // L R C Lfe Ls Rs Sl Sr Tfl Tfr Trl Trr     7.1.4 (ITU 4 or 7 or 0.1 Sound System J)
   k71_4 = k70_4 or kSpeakerLfe;
   k111MPEG3D = k71_4;
@@ -1069,6 +1075,8 @@ const
   kString51_4_1 = '5.1.4.1';
   kString70_2 = '7.0.2';
   kString71_2 = '7.1.2';
+  kString70_2_TF = '7.0.2 Top Front';
+  kString71_2_TF = '7.1.2 Top Front';
   kString70_3 = '7.0.3';
   kString72_3 = '7.2.3';
   kString70_4 = '7.0.4';
@@ -1168,6 +1176,8 @@ const
   kString51_4_1S  = 'L R C LFE Ls Rs Tfl Tfr Trl Trr Bfc';
   kString70_2S    = 'L R C Ls Rs Sl Sr Tsl Tsr';
   kString71_2S    = 'L R C LFE Ls Rs Sl Sr Tsl Tsr';
+  kString70_2_TFS = 'L R C Ls Rs Sl Sr Tfl Tfr';
+  kString71_2_TFS = 'L R C LFE Ls Rs Sl Sr Tfl Tfr';
   kString70_3S    = 'L R C Ls Rs Sl Sr Tfl Tfr Trc';
   kString72_3S    = 'L R C LFE Ls Rs Sl Sr Tfl Tfr Trc LFE2';
   kString70_4S    = 'L R C Ls Rs Sl Sr Tfl Tfr Trl Trr';
@@ -1608,20 +1618,32 @@ const
   kVstComponentControllerClass = 'Component Controller Class';
   kViewTypeEditor = 'editor';
 
-  kCanAutomate = 1 shl 0; // parameter can be automated
-  // parameter cannot be changed from outside the plug-in (implies that kCanAutomate is NOT set)
+  // No flags wanted.
+  // [SDK 3.0.0]
+  kNoFlags = 0;
+  // Parameter can be automated.
+  // [SDK 3.0.0]
+  kCanAutomate = 1 shl 0;
+  // Parameter cannot be changed from outside the plug-in
+  // (implies that kCanAutomate is NOT set).
+  // [SDK 3.0.0]
   kIsReadOnly = 1 shl 1;
-  // attempts to set the parameter value out of the limits will result in a wrap around [SDK 3.0.2]
+  // Attempts to set the parameter value out of the limits will result in a wrap around.
+  // [SDK 3.0.2]
   kIsWrapAround = 1 shl 2;
-  // parameter should be displayed as list in generic editor or automation editing [SDK 3.1.0]
+  // Parameter should be displayed as list in generic editor or automation editing.
+  // [SDK 3.1.0]
   kIsList = 1 shl 3;
-  // parameter should be NOT displayed and cannot be changed from outside the plug-in
-  // (implies that kCanAutomate is NOT set and kIsReadOnly is set) [SDK 3.7.0]
+  // Parameter should be NOT displayed and cannot be changed from outside the plug-in
+  // (implies that kCanAutomate is NOT set and kIsReadOnly is set).
+  // [SDK 3.7.0]
   kIsHidden = 1 shl 4;
-  // parameter is a program change (unitId gives info about associated unit - see vst3ProgramLists)
+  // Parameter is a program change (unitId gives info about associated unit - see vst3ProgramLists).
+  // [SDK 3.0.0]
   kIsProgramChange = 1 shl 15;
-  // special bypass parameter (only one allowed): plug-in can handle bypass
-  // (highly recommended to export a bypass parameter for effect plug-in)
+  // Special bypass parameter (only one allowed): plug-in can handle bypass.
+  // Highly recommended to export a bypass parameter for effect plug-in.
+  // [SDK 3.0.0]
   kIsBypass = 1 shl 16;
 
 type
@@ -1731,16 +1753,16 @@ type
   IComponentHandler = interface(FUnknown) [GUID_IComponentHandler]
     // To be called before calling a performEdit (e.g. on mouse-click-down event).
     // This must be called in the UI-Thread context!
-    function BeginEdit(ID:TParamID):tresult; winapi;
+    function BeginEdit({in}ID:TParamID):tresult; winapi;
     // Called between beginEdit and endEdit to inform the handler that a given parameter has a new
     // value. This must be called in the UI-Thread context!
-    function PerformEdit(ID:TParamID;ValueNormalized:TParamValue):tresult; winapi;
+    function PerformEdit({in}ID:TParamID;{in}ValueNormalized:TParamValue):tresult; winapi;
     // To be called after calling a performEdit (e.g. on mouse-click-up event).
     // This must be called in the UI-Thread context!
-    function EndEdit(ID:TParamID):tresult; winapi;
+    function EndEdit({in}ID:TParamID):tresult; winapi;
     // Instructs host to restart the component. This must be called in the UI-Thread context!
     // param flags is a combination of TRestartFlags
-    function RestartComponent(Flags:Int32):tresult; winapi;
+    function RestartComponent({in}Flags:Int32):tresult; winapi;
   end;
 
   // Extended host callback interface for an edit controller: Vst::IComponentHandler2
@@ -1758,7 +1780,7 @@ type
   IComponentHandler2 = interface(FUnknown) [GUID_IComponentHandler2]
     // Tells host that the plug-in is dirty (something besides parameters has changed since last save),
     // if true the host should apply a save before quitting.
-    function SetDirty(state:TBool):tresult; winapi;
+    function SetDirty({in}state:TBool):tresult; winapi;
     // Tells host that it should open the plug-in editor the next time it's possible.
     // You should use this instead of showing an alert and blocking the program flow (especially on loading projects).
     // Set kViewTypeEditor
@@ -1782,7 +1804,8 @@ type
   // the user could request from the plug-in UI a given output bus activation.
   IComponentHandlerBusActivation = interface(FUnknown) [GUID_IComponentHandlerBusActivation]
     // request the host to activate or deactivate a specific bus.
-    function RequestBusActivation(&Type:TMediaType; dir:TBusDirection; index:Int32; state:TBool):tresult; winapi;
+    function RequestBusActivation({in}&type:TMediaType; {in}dir:TBusDirection;
+                                  {in}index:Int32; {in}state:TBool):tresult; winapi;
   end;
 
 const
@@ -1879,11 +1902,11 @@ type
   IProgress = interface(FUnknown) [GUID_IProgress]
     // Start a new progress of a given type and optional Description. outID is as ID created by the
     // host to identify this newly created progress (for update and finish method)
-    function Start(&Type:TProgressType; OptionalDescription:PWideChar; var OutID:UInt64):tresult; winapi;
+    function Start({in}&type:TProgressType; {in}OptionalDescription:PWideChar; out OutID:UInt64):tresult; winapi;
     // Update the progress value (normValue between [0, 1]) associated to the given id
-    function Update(ID:UInt64; NormValue:TParamValue):tresult; winapi;
+    function Update({in}ID:UInt64; {in}NormValue:TParamValue):tresult; winapi;
     // Finish the progress associated to the given id
-    function Finish(ID:UInt64):tresult; winapi;
+    function Finish({in}ID:UInt64):tresult; winapi;
   end;
 
   // Edit controller component interface: Vst::IEditController
@@ -1893,36 +1916,36 @@ type
   // The controller part of an effect or instrument with parameter handling (export, definition, conversion...).
   IEditController = interface(IPluginBase) [GUID_IEditController]
     // Receives the component state.
-    function SetComponentState(state:IBStream):tresult; winapi;
+    function SetComponentState({in}state:IBStream):tresult; winapi;
     // Sets the controller state.
-    function SetState(state:IBStream):tresult; winapi;
+    function SetState({in}state:IBStream):tresult; winapi;
     // Gets the controller state.
-    function GetState(state:IBStream):tresult; winapi;
+    function GetState({inout}state:IBStream):tresult; winapi;
     // Returns the number of parameters exported.
     function GetParameterCount:Int32; winapi;
     // Gets for a given index the parameter information.
-    function GetParameterInfo(ParamIndex:Int32; var info:TParameterInfo):tresult; winapi;
+    function GetParameterInfo({in}ParamIndex:Int32; out info:TParameterInfo):tresult; winapi;
     // Gets for a given paramID and normalized value its associated string representation.
-    function GetParamStringByValue(id:TParamID; {in}ValueNormalized:TParamValue; {Length=128}str:PChar16):tresult; winapi;
+    function GetParamStringByValue({in}id:TParamID; {in}ValueNormalized:TParamValue; {Length=128,out}str:PChar16):tresult; winapi;
     // Gets for a given paramID and string its normalized value.
-    function GetParamValueByString(id:TParamID; {in}str:PWideChar; var ValueNormalized:TParamValue):tresult; winapi;
+    function GetParamValueByString({in}id:TParamID; {in}str:PWideChar; out ValueNormalized:TParamValue):tresult; winapi;
     // Returns for a given paramID and a normalized value its plain representation
     // (for example -6 for -6dB - see vst3AutomationIntro).
-    function NormalizedParamToPlain(id:TParamID; ValueNormalized:TParamValue):TParamValue; winapi;
+    function NormalizedParamToPlain({in}id:TParamID; {in}ValueNormalized:TParamValue):TParamValue; winapi;
     // Returns for a given paramID and a plain value its normalized value. (see vst3AutomationIntro)
-    function PlainParamToNormalized(id:TParamID; PlainValue:TParamValue):TParamValue; winapi;
+    function PlainParamToNormalized({in}id:TParamID; {in}PlainValue:TParamValue):TParamValue; winapi;
     // Returns the normalized value of the parameter associated to the paramID.
-    function GetParamNormalized(id:TParamID):TParamValue; winapi;
+    function GetParamNormalized({in}id:TParamID):TParamValue; winapi;
     // Sets the normalized value to the parameter associated to the paramID. The controller must never
     // pass this value-change back to the host via the IComponentHandler. It should update the according
     // GUI element(s) only!
-    function SetParamNormalized(id:TParamID; value:TParamValue):tresult; winapi;
+    function SetParamNormalized({in}id:TParamID; {in}value:TParamValue):tresult; winapi;
     // Gets from host a handler which allows the Plugin-in to communicate with the host.
     // Note: This is mandatory if the host is using the IEditController!
-    function SetComponentHandler(handler:IComponentHandler):tresult; winapi;
+    function SetComponentHandler({in}handler:IComponentHandler):tresult; winapi;
     // Creates the editor view of the plug-in, currently only "editor" is supported, see ViewType.
     // The life time of the editor view will never exceed the life time of this controller instance.
-    function CreateView(name:FIDString):IPlugView {$ifdef DCC}unsafe{$endif}; winapi;
+    function CreateView({in}name:FIDString):IPlugView {$ifdef DCC}unsafe{$endif}; winapi;
   end;
 
   // Knob Mode Type
@@ -1943,15 +1966,15 @@ type
   // and to open the plug-in about box or help documentation.
   IEditController2 = interface(FUnknown) [GUID_IEditController2]
     // Host could set the Knob Mode for the plug-in. Return kResultFalse means not supported mode. see KnobModes.
-    function SetKnobMode(mode:TKnobMode):tresult; winapi;
+    function SetKnobMode({in}mode:TKnobMode):tresult; winapi;
     // Host could ask to open the plug-in help (could be: opening a PDF document or link to a web page).
     // The host could call it with onlyCheck set to true for testing support of open Help.
     // Return kResultFalse means not supported function.
-    function OpenHelp(OnlyCheck:TBool):tresult; winapi;
+    function OpenHelp({in}OnlyCheck:TBool):tresult; winapi;
     // Host could ask to open the plug-in about box.
     // The host could call it with onlyCheck set to true for testing support of open AboutBox.
     // Return kResultFalse means not supported function.
-    function OpenAboutBox(OnlyCheck:TBool):tresult; winapi;
+    function OpenAboutBox({in}OnlyCheck:TBool):tresult; winapi;
   end;
 
   // MIDI Mapping interface: Vst::IMidiMapping
@@ -1976,8 +1999,9 @@ type
     // param[in] channel - channel of the bus
     // param[in] midiControllerNumber - see ControllerNumbers for expected values (could be bigger than 127)
     // param[in] id - return the associated ParamID to the given midiControllerNumber
-    function GetMidiControllerAssignment(BusIndex:Int32; channel:Int16; MidiControllerNumber:TCtrlNumber;
-      var id:TParamID):tresult; winapi;
+    function GetMidiControllerAssignment({in}BusIndex:Int32; {in}channel:Int16;
+                                         {in}MidiControllerNumber:TCtrlNumber;
+                                         out id:TParamID):tresult; winapi;
   end;
 
   // Parameter Editing from host: Vst::IEditControllerHostEditing
@@ -1990,9 +2014,9 @@ type
   // the host will start with a beginEditFromHost before calling setParamNormalized and end with an endEditFromHost.
   IEditControllerHostEditing = interface(FUnknown) [GUID_IEditControllerHostEditing]
     // Called before a setParamNormalized sequence, a endEditFromHost will be call at the end of the editing action.
-    function BeginEditFromHost(ParamID:TParamID):tresult; winapi;
+    function BeginEditFromHost({in}ParamID:TParamID):tresult; winapi;
     // Called after a beginEditFromHost and a sequence of setParamNormalized.
-    function EndEditFromHost(ParamID:TParamID):tresult; winapi;
+    function EndEditFromHost({in}ParamID:TParamID):tresult; winapi;
   end;
 
   // Extended plug-in interface IComponentHandler for an edit controller
@@ -2001,7 +2025,7 @@ type
   // - [released: 3.7.9]
   // - [optional]
   IComponentHandlerSystemTime = interface(FUnknown) [GUID_IComponentHandlerSystemTime]
-    function GetSystemTime(var SysTime:Int64):tresult; winapi;
+    function GetSystemTime(out SysTime:Int64):tresult; winapi;
   end;
 
   // Queue of changes for a specific parameter: Vst::IParamValueQueue
@@ -3342,9 +3366,10 @@ type
     // [in] PluginToReplaceUID - TUID of plug-in (processor) that will be replaced
     // [in] OldParamID - paramID (or index for VST 2 plug-ins) to be replaced
     // [out] NewParamID - contains the associated paramID to be used
-    // Return kResultTrue means that a compatible parameter is available
-    // Return kResultFalse means that NO compatible parameter is available
-    function GetCompatibleParamID(const PluginToReplaceUID:TGuid; OldParamID:TParamID; out NewParamID:TParamID):tresult; winapi;
+    // return kResultTrue if a compatible parameter is available (newParamID has the appropriate
+    // value, it could be the same than oldParamID), or kResultFalse if no compatible parameter is
+    // available (newParamID is undefined)
+    function GetCompatibleParamID(const {in}PluginToReplaceUID:TGuid; {in}OldParamID:TParamID; out NewParamID:TParamID):tresult; winapi;
   end;
 
 {$ifdef FPC} {$pop} {$else} {$A+} {$endif}
