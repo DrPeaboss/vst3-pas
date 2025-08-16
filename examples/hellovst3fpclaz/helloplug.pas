@@ -35,7 +35,7 @@ type
       outputs:PSpeakerArrangement; NumOuts:Int32):tresult; override; winapi;
     function GetBusArrangements(kBusDir:TBusDirection; index:Int32;
       var arr:TSpeakerArrangement):tresult; override; winapi;
-    function Process(var data:TProcessData):tresult; override; winapi;
+    function Process(const data:TProcessData):tresult; override; winapi;
   end;
 
   IUpdateGUI = interface(FUnknown)
@@ -53,9 +53,9 @@ type
   public
     function Initialize(context:FUnknown):tresult; override; winapi;
     function GetParameterCount:Int32; override; winapi;
-    function GetParameterInfo(ParamIndex:Int32; var info:TParameterInfo):tresult; override; winapi;
+    function GetParameterInfo(ParamIndex:Int32; out info:TParameterInfo):tresult; override; winapi;
     function GetParamStringByValue(id:TParamID; ValueNormalized:TParamValue; str:PChar16):tresult; override; winapi;
-    function GetParamValueByString(id:TParamID; str:PWideChar; var ValueNormalized:TParamValue):tresult; override; winapi;
+    function GetParamValueByString(id:TParamID; str:PWideChar; out ValueNormalized:TParamValue):tresult; override; winapi;
     function NormalizedParamToPlain(id:TParamID; ValueNormalized:TParamValue):TParamValue; override; winapi;
     function PlainParamToNormalized(id:TParamID; PlainValue:TParamValue):TParamValue; override; winapi;
     function GetParamNormalized(id:TParamID):TParamValue; override; winapi;
@@ -172,7 +172,7 @@ begin
   Result:=kResultOk;
 end;
 
-function THelloProcessor.Process(var data:TProcessData):tresult; winapi;
+function THelloProcessor.Process(const data:TProcessData):tresult; winapi;
 var
   changes:IParameterChanges;
   ParamQueue:IParamValueQueue;
@@ -227,7 +227,7 @@ begin
   Result:=1;
 end;
 
-function THelloController.GetParameterInfo(ParamIndex:Int32; var info:TParameterInfo):tresult; winapi;
+function THelloController.GetParameterInfo(ParamIndex:Int32; out info:TParameterInfo):tresult; winapi;
 begin
   if ParamIndex<>0 then
     Exit(kResultFalse);
@@ -243,7 +243,7 @@ begin
 end;
 
 function THelloController.GetParamValueByString(id:TParamID; str:PWideChar;
-  var ValueNormalized:TParamValue):tresult; winapi;
+  out ValueNormalized:TParamValue):tresult; winapi;
 begin
   Result:=kNotImplemented;
 end;

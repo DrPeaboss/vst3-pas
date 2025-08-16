@@ -1,6 +1,6 @@
 # vst3-pas
 
-The Object Pascal(FPC and Delphi) bindings of VST 3 API. Current version is 3.7.12 (2024/07/23).
+The Object Pascal(FPC and Delphi) bindings of VST 3 API. Current version is 3.7.14 (2025/06/23).
 
 Original API is at <https://github.com/steinbergmedia/vst3_pluginterfaces>
 
@@ -10,7 +10,7 @@ VST is a trademark of Steinberg Media Technologies GmbH, registered in Europe an
 
 - Support Free Pascal 3.2.2 and above.
 
-- Support Delphi 11, and should support at least 10.x series versions(untested).
+- Should support Delphi 10.x and above(untested).
 
 ### FPC&Lazarus
 

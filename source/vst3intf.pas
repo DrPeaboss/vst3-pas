@@ -28,6 +28,8 @@ unit VST3Intf;
 
 interface
 
+uses Math;
+
 { Delphi Compatibility }
 
 {$ifndef FPC}
@@ -40,17 +42,19 @@ type
 { VST Versions }
 
 const
-  kVstVersionString = 'VST 3.7.12'; // SDK version for TPClassInfo2
+  kVstVersionString = 'VST 3.7.14'; // SDK version for TPClassInfo2
 
   kVstVersionMajor  = 3;
   kVstVersionMinor  = 7;
-  kVstVersionSub    = 12;
+  kVstVersionSub    = 14;
 
   VST_VERSION = kVstVersionMajor shl 16 or kVstVersionMinor shl 8 or kVstVersionSub;
 
   // Versions History which allows to write such code:
   // {$IF VST_VERSION >= VST_3_6_5_VERSION}
 
+  VST_3_7_14_VERSION = $03070E;
+  VST_3_7_13_VERSION = $03070D;
   VST_3_7_12_VERSION = $03070C;
   VST_3_7_11_VERSION = $03070B;
   VST_3_7_10_VERSION = $03070A;
@@ -84,6 +88,8 @@ const
   SDKVersionMinor   = kVstVersionMinor;
   SDKVersionSub     = kVstVersionSub;
   SDKVersion        = VST_VERSION;
+  SDKVersion_3_7_14 = VST_3_7_14_VERSION;
+  SDKVersion_3_7_13 = VST_3_7_13_VERSION;
   SDKVersion_3_7_12 = VST_3_7_12_VERSION;
   SDKVersion_3_7_11 = VST_3_7_11_VERSION;
   SDKVersion_3_7_10 = VST_3_7_10_VERSION;
@@ -257,6 +263,7 @@ const
   GUID_IInterAppAudioPresetManager = '{ADE6FCC4-46C9-4E1D-B3B4-9A80C93FEFDD}';
   GUID_IPluginCompatibility = '{4AFD4B6A-35D7-C240-A5C3-1414FB7D15E6}';
   GUID_IRemapParamID = '{2B88021E-6286-B646-B49D-F76A5663061C}';
+  GUID_IInfoListener = '{0F194781-8D98-4ADA-BBA0-C1EFC011D8D0}';
 
 type
 {$ifndef FPC}
@@ -470,12 +477,12 @@ type
   // to create instances of these classes (that usually define the IPluginBase interface).
   IPluginFactory = interface(FUnknown) [GUID_IPluginFactory]
     // Fill a TPFactoryInfo structure with information about the plug-in vendor.
-    function GetFactoryInfo(info:PPFactoryInfo):tresult; winapi;
+    function GetFactoryInfo({inout}info:PPFactoryInfo):tresult; winapi;
     // Returns the number of exported classes by this factory.
     // If you are using the CPluginFactory implementation provided by the SDK, it returns the number of classes you registered with CPluginFactory::registerClass.
     function CountClasses:Int32; winapi;
     // Fill a TPClassInfo structure with information about the class at the specified index.
-    function GetClassInfo(index:Int32; info:PPClassInfo):tresult; winapi;
+    function GetClassInfo(index:Int32; {inout}info:PPClassInfo):tresult; winapi;
     // Create a new class instance.
     function CreateInstance(const cid:TGuid; const iid:TGuid; out obj):tresult; winapi;
   end;
@@ -484,14 +491,14 @@ type
   // Version 2 of class factory supporting TPClassInfo2: IPluginFactory2
   IPluginFactory2 = interface(IPluginFactory) [GUID_IPluginFactory2]
     // Returns the class info (version 2) for a given index.
-    function GetClassInfo2(index:Int32; info:PPClassInfo2):tresult; winapi;
+    function GetClassInfo2(index:Int32; {inout}info:PPClassInfo2):tresult; winapi;
   end;
 
   // IPluginFactory3 interface declaration
   // Version 3 of class factory supporting TPClassInfoW: IPluginFactory3
   IPluginFactory3 = interface(IPluginFactory2) [GUID_IPluginFactory3]
     // Returns the unicode class info for a given index.
-    function GetClassInfoUnicode(index:Int32; info:PPClassInfoW):tresult; winapi;
+    function GetClassInfoUnicode(index:Int32; {inout}info:PPClassInfoW):tresult; winapi;
     // Receives information about host
     function SetHostContext(context:FUnknown):tresult; winapi;
   end;
@@ -622,11 +629,11 @@ type
     // When binary data should be stored in the default pool for example, you must always copy it!
     function SetBinaryData(AttrID:IAttrID; data:Pointer; bytes:UInt32; CopyBytes:Boolean):tresult; winapi;
     // Get data previously stored to the archive.
-    function GetData(AttrID:IAttrID; var data:FVariant):tresult; winapi;
+    function GetData(AttrID:IAttrID; out data:FVariant):tresult; winapi;
     // Get list of data previously stored to the archive. As long as there are queue members the method
     // will return kResultTrue. When the queue is empty, the methods returns kResultFalse. All lists except from
     // object lists can be reset which means that the items can be read once again. see IAttributes::resetQueue
-    function Unqueue(ListID:IAttrID; var data:FVariant):tresult; winapi;
+    function Unqueue(ListID:IAttrID; out data:FVariant):tresult; winapi;
     // Get the amount of items in a queue.
     function GetQueueItemCount(AttrID:IAttrID):Int32; winapi;
     // Reset a queue. If you need to restart reading a queue, you have to reset it. You can reset a queue at any time.
@@ -1361,6 +1368,11 @@ type
   // Plug-in definition of a view.
   // - [plug imp]
   // - [released: 3.0.0]
+  // Coordinates
+  // The coordinates utilized within the ViewRect are native to the view system of the parent type.
+  // This implies that on macOS (kPlatformTypeNSView), the coordinates are expressed in logical
+  // units (independent of the screen scale factor), whereas on Windows (kPlatformTypeHWND) and
+  // Linux (kPlatformTypeX11EmbedWindowID), the coordinates are expressed in physical units (pixels).
   // Sizing of a view
   // Usually, the size of a plug-in view is fixed. But both the host and the plug-in can cause
   // a view to be resized:
@@ -1501,6 +1513,10 @@ type
   // It is recommended to implement this interface on Microsoft Windows to let the host know that the
   // plug-in is able to render in different scalings.
   IPlugViewContentScaleSupport = interface(FUnknown) [GUID_IPlugViewContentScaleSupport]
+    // Set the Content Scale Factor
+    // param factor the scale factor requested by the host
+    // return kResultTrue when a plug-in handles this
+    // [UI-thread]
     function SetContentScaleFactor(Factor:TScaleFactor):tresult; winapi;
   end;
 
@@ -1512,7 +1528,7 @@ type
   {$else}
     {$A1}
   {$endif}
-{$elseif defined(MSWINDOWS)}
+{$elseif defined(MSWINDOWS) or defined(linux)}
   {$if defined(CPU64BITS) or defined(CPU64)}
     {$Align 16}
   {$else}
@@ -1663,7 +1679,7 @@ type
     // defaultNormalizedValue = defDiscreteValue / stepCount)
     DefaultNormalizedValue:TParamValue;
     UnitID:TUnitID;  // id of unit this parameter belongs to (see vst3Units)
-    Flags:Int32;
+    Flags:Int32; // Note that all non defined bits are reserved for future use!
   end;
 
 const
@@ -1752,16 +1768,17 @@ type
   // Cause the host to react on configuration changes (restartComponent).
   IComponentHandler = interface(FUnknown) [GUID_IComponentHandler]
     // To be called before calling a performEdit (e.g. on mouse-click-down event).
-    // This must be called in the UI-Thread context!
+    // [UI-thread & Connected]
     function BeginEdit({in}ID:TParamID):tresult; winapi;
-    // Called between beginEdit and endEdit to inform the handler that a given parameter has a new
-    // value. This must be called in the UI-Thread context!
+    // Called between beginEdit and endEdit to inform the handler that a given parameter has a new value.
+    // [UI-thread & Connected]
     function PerformEdit({in}ID:TParamID;{in}ValueNormalized:TParamValue):tresult; winapi;
     // To be called after calling a performEdit (e.g. on mouse-click-up event).
-    // This must be called in the UI-Thread context!
+    // [UI-thread & Connected]
     function EndEdit({in}ID:TParamID):tresult; winapi;
     // Instructs host to restart the component. This must be called in the UI-Thread context!
     // param flags is a combination of TRestartFlags
+    // [UI-thread & Connected]
     function RestartComponent({in}Flags:Int32):tresult; winapi;
   end;
 
@@ -1780,16 +1797,20 @@ type
   IComponentHandler2 = interface(FUnknown) [GUID_IComponentHandler2]
     // Tells host that the plug-in is dirty (something besides parameters has changed since last save),
     // if true the host should apply a save before quitting.
+    // [UI-thread & Connected]
     function SetDirty({in}state:TBool):tresult; winapi;
     // Tells host that it should open the plug-in editor the next time it's possible.
     // You should use this instead of showing an alert and blocking the program flow (especially on loading projects).
     // Set kViewTypeEditor
+    // [UI-thread & Connected]
     function RequestOpenEditor(name:FIDString{$ifdef FPC}=kViewTypeEditor{$endif}):tresult; winapi;
     // Starts the group editing (call before a IComponentHandler::beginEdit),
     // the host will keep the current timestamp at this call and will use it for all IComponentHandler::beginEdit
     // IComponentHandler::performEdit / IComponentHandler::endEdit calls until a finishGroupEdit ().
+    // [UI-thread & Connected]
     function StartGroupEdit:tresult; winapi;
     // Finishes the group editing started by a startGroupEdit (call after a IComponentHandler::endEdit).
+    // [UI-thread & Connected]
     function FinishGroupEdit:tresult; winapi;
   end;
 
@@ -1804,6 +1825,7 @@ type
   // the user could request from the plug-in UI a given output bus activation.
   IComponentHandlerBusActivation = interface(FUnknown) [GUID_IComponentHandlerBusActivation]
     // request the host to activate or deactivate a specific bus.
+    // [UI-thread & Connected]
     function RequestBusActivation({in}&type:TMediaType; {in}dir:TBusDirection;
                                   {in}index:Int32; {in}state:TBool):tresult; winapi;
   end;
@@ -1837,14 +1859,19 @@ type
   // With IContextMenu the plug-in can retrieve a Item, add a Item, remove a Item and pop-up the menu.
   IContextMenu = interface(FUnknown) [GUID_IContextMenu]
     // Gets the number of menu items.
+    // [UI-thread]
     function GetItemCount:Int32; winapi;
     // Gets a menu item and its target (target could be not assigned).
-    function GetItem(Index:Int32; var item:TContextMenuItem; target:PIContextMenuTarget):tresult; winapi;
+    // [UI-thread]
+    function GetItem(Index:Int32; out item:TContextMenuItem; {out}target:PIContextMenuTarget):tresult; winapi;
     // Adds a menu item and its target.
+    // [UI-thread]
     function AddItem(const item:TContextMenuItem; target:IContextMenuTarget):tresult; winapi;
     // Removes a menu item.
+    // [UI-thread]
     function RemoveItem(const item:TContextMenuItem; target:IContextMenuTarget):tresult; winapi;
     // Pop-ups the menu. Coordinates are relative to the top-left position of the plug-ins view.
+    // [UI-thread]
     function Popup(x,y:UCoord):tresult; winapi;
   end;
 
@@ -1856,6 +1883,7 @@ type
   // A receiver of a menu item should implement this interface, which will be called after the user has selected this menu item.
   IContextMenuTarget = interface(FUnknown) [GUID_IContextMenuTarget]
     // Called when an menu item was executed.
+    // [UI-thread & (Initialized | Connected) & plugView]
     function ExecuteMenuItem(tag:Int32):tresult; winapi;
   end;
 
@@ -1873,9 +1901,10 @@ type
   // Note: You can and should use this even if you do not add your own items to the menu as this is considered to be a big user value.
   IComponentHandler3 = interface(FUnknown) [GUID_IComponentHandler3]
     // Creates a host context menu for a plug-in:
-		// - If paramID is zero, the host may create a generic context menu.
-		// - The IPlugView object must be valid.
-		// - The return IContextMenu object needs to be released afterwards by the plug-in.
+    //   - If paramID is zero, the host may create a generic context menu.
+    //   - The IPlugView object must be valid.
+    //   - The return IContextMenu object needs to be released afterwards by the plug-in.
+    // [UI-thread & (Initialized | Connected) & plugView]
     function CreateContextMenu(PlugView:IPlugView; ParamID:PParamID):IContextMenu {$ifdef DCC}unsafe{$endif}; winapi;
   end;
 
@@ -1902,10 +1931,13 @@ type
   IProgress = interface(FUnknown) [GUID_IProgress]
     // Start a new progress of a given type and optional Description. outID is as ID created by the
     // host to identify this newly created progress (for update and finish method)
+    // [UI-thread & Connected]
     function Start({in}&type:TProgressType; {in}OptionalDescription:PWideChar; out OutID:UInt64):tresult; winapi;
     // Update the progress value (normValue between [0, 1]) associated to the given id
+    // [UI-thread & Connected]
     function Update({in}ID:UInt64; {in}NormValue:TParamValue):tresult; winapi;
     // Finish the progress associated to the given id
+    // [UI-thread & Connected]
     function Finish({in}ID:UInt64):tresult; winapi;
   end;
 
@@ -1916,35 +1948,48 @@ type
   // The controller part of an effect or instrument with parameter handling (export, definition, conversion...).
   IEditController = interface(IPluginBase) [GUID_IEditController]
     // Receives the component state.
+    // [UI-thread & Connected]
     function SetComponentState({in}state:IBStream):tresult; winapi;
     // Sets the controller state.
+    // [UI-thread & Connected]
     function SetState({in}state:IBStream):tresult; winapi;
     // Gets the controller state.
+    // [UI-thread & Connected]
     function GetState({inout}state:IBStream):tresult; winapi;
     // Returns the number of parameters exported.
+    // [UI-thread & Connected]
     function GetParameterCount:Int32; winapi;
     // Gets for a given index the parameter information.
+    // [UI-thread & Connected]
     function GetParameterInfo({in}ParamIndex:Int32; out info:TParameterInfo):tresult; winapi;
     // Gets for a given paramID and normalized value its associated string representation.
+    // [UI-thread & Connected]
     function GetParamStringByValue({in}id:TParamID; {in}ValueNormalized:TParamValue; {Length=128,out}str:PChar16):tresult; winapi;
     // Gets for a given paramID and string its normalized value.
+    // [UI-thread & Connected]
     function GetParamValueByString({in}id:TParamID; {in}str:PWideChar; out ValueNormalized:TParamValue):tresult; winapi;
     // Returns for a given paramID and a normalized value its plain representation
     // (for example -6 for -6dB - see vst3AutomationIntro).
+    // [UI-thread & Connected]
     function NormalizedParamToPlain({in}id:TParamID; {in}ValueNormalized:TParamValue):TParamValue; winapi;
     // Returns for a given paramID and a plain value its normalized value. (see vst3AutomationIntro)
+    // [UI-thread & Connected]
     function PlainParamToNormalized({in}id:TParamID; {in}PlainValue:TParamValue):TParamValue; winapi;
     // Returns the normalized value of the parameter associated to the paramID.
+    // [UI-thread & Connected]
     function GetParamNormalized({in}id:TParamID):TParamValue; winapi;
     // Sets the normalized value to the parameter associated to the paramID. The controller must never
     // pass this value-change back to the host via the IComponentHandler. It should update the according
     // GUI element(s) only!
+    // [UI-thread & Connected]
     function SetParamNormalized({in}id:TParamID; {in}value:TParamValue):tresult; winapi;
     // Gets from host a handler which allows the Plugin-in to communicate with the host.
     // Note: This is mandatory if the host is using the IEditController!
+    // [UI-thread & Initialized]
     function SetComponentHandler({in}handler:IComponentHandler):tresult; winapi;
     // Creates the editor view of the plug-in, currently only "editor" is supported, see ViewType.
     // The life time of the editor view will never exceed the life time of this controller instance.
+    // [UI-thread & Connected]
     function CreateView({in}name:FIDString):IPlugView {$ifdef DCC}unsafe{$endif}; winapi;
   end;
 
@@ -1966,14 +2011,17 @@ type
   // and to open the plug-in about box or help documentation.
   IEditController2 = interface(FUnknown) [GUID_IEditController2]
     // Host could set the Knob Mode for the plug-in. Return kResultFalse means not supported mode. see KnobModes.
+    // [UI-thread & Connected]
     function SetKnobMode({in}mode:TKnobMode):tresult; winapi;
     // Host could ask to open the plug-in help (could be: opening a PDF document or link to a web page).
     // The host could call it with onlyCheck set to true for testing support of open Help.
     // Return kResultFalse means not supported function.
+    // [UI-thread & Connected]
     function OpenHelp({in}OnlyCheck:TBool):tresult; winapi;
     // Host could ask to open the plug-in about box.
     // The host could call it with onlyCheck set to true for testing support of open AboutBox.
     // Return kResultFalse means not supported function.
+    // [UI-thread & Connected]
     function OpenAboutBox({in}OnlyCheck:TBool):tresult; winapi;
   end;
 
@@ -1999,6 +2047,7 @@ type
     // param[in] channel - channel of the bus
     // param[in] midiControllerNumber - see ControllerNumbers for expected values (could be bigger than 127)
     // param[in] id - return the associated ParamID to the given midiControllerNumber
+    // [UI-thread & Connected]
     function GetMidiControllerAssignment({in}BusIndex:Int32; {in}channel:Int16;
                                          {in}MidiControllerNumber:TCtrlNumber;
                                          out id:TParamID):tresult; winapi;
@@ -2014,8 +2063,10 @@ type
   // the host will start with a beginEditFromHost before calling setParamNormalized and end with an endEditFromHost.
   IEditControllerHostEditing = interface(FUnknown) [GUID_IEditControllerHostEditing]
     // Called before a setParamNormalized sequence, a endEditFromHost will be call at the end of the editing action.
+    // [UI-thread & Connected]
     function BeginEditFromHost({in}ParamID:TParamID):tresult; winapi;
     // Called after a beginEditFromHost and a sequence of setParamNormalized.
+    // [UI-thread & Connected]
     function EndEditFromHost({in}ParamID:TParamID):tresult; winapi;
   end;
 
@@ -2025,6 +2076,7 @@ type
   // - [released: 3.7.9]
   // - [optional]
   IComponentHandlerSystemTime = interface(FUnknown) [GUID_IComponentHandlerSystemTime]
+    // [UI-thread & Connected]
     function GetSystemTime(out SysTime:Int64):tresult; winapi;
   end;
 
@@ -2047,9 +2099,9 @@ type
     // Returns count of points in the queue.
     function GetPointCount:Int32; winapi;
     // Gets the value and offset at a given index.
-    function GetPoint(index:Int32; var SampleOffset:Int32; var value:TParamValue):tresult; winapi;
+    function GetPoint(index:Int32; out SampleOffset:Int32; out value:TParamValue):tresult; winapi;
     // Adds a new value at the end of the queue, its index is returned.
-    function AddPoint(SampleOffset:Int32; value:TParamValue; var index:Int32):tresult; winapi;
+    function AddPoint(SampleOffset:Int32; value:TParamValue; out index:Int32):tresult; winapi;
   end;
 
   // All parameter changes of a processing block: Vst::IParameterChanges
@@ -2067,7 +2119,7 @@ type
     function GetParameterData(index:Int32):IParamValueQueue {$ifdef DCC}unsafe{$endif}; winapi;
     // Adds a new parameter queue with a given ID at the end of the list,
     // returns it and its index in the parameter changes list.
-    function AddParameterData({const ref ?}id:TParamID; var index:Int32):
+    function AddParameterData({const ref ?}id:TParamID; out index:Int32):
       IParamValueQueue {$ifdef DCC}unsafe{$endif}; winapi;
   end;
 
@@ -2109,11 +2161,13 @@ type
   // Retrieve via queryInterface from IComponentHandler.
   IUnitHandler = interface(FUnknown) [GUID_IUnitHandler]
     // Notify host when a module is selected in plug-in GUI.
+    // [UI-thread & (Initialized | Connected)]
     function NotifyUnitSelection(UnitID:TUnitID):tresult; winapi;
     // Tell host that the plug-in controller changed a program list (rename, load, PitchName changes).
     // param listId is the specified program list ID to inform.
     // param programIndex : when kAllProgramInvalid, all program information is invalid,
     // otherwise only the program of given index.
+    // [UI-thread & (Initialized | Connected)]
     function NotifyProgramListChange(ListID:TProgramListID; ProgramIndex:Int32):tresult; winapi;
   end;
 
@@ -2129,6 +2183,7 @@ type
   // to get the new relations between busses and unit.
   IUnitHandler2 = interface(FUnknown) [GUID_IUnitHandler2]
     // Tell host that assignment Unit-Bus defined by IUnitInfo::getUnitByBus has changed.
+    // [UI-thread & (Initialized | Connected)]
     function NotifyUnitByBusChange:tresult; winapi;
   end;
 
@@ -2144,30 +2199,41 @@ type
   // - Each unit, using a program list, references one program of the list.
   IUnitInfo = interface(FUnknown) [GUID_IUnitInfo]
     // Returns the flat count of units.
+    // [UI-thread & (Initialized | Connected)]
     function GetUnitCount:Int32; winapi;
     // Gets UnitInfo for a given index in the flat list of unit.
-    function GetUnitInfo(UnitIndex:Int32; var info:TUnitInfo):tresult; winapi;
+    // [UI-thread & (Initialized | Connected)]
+    function GetUnitInfo(UnitIndex:Int32; var {inout}info:TUnitInfo):tresult; winapi;
     // Gets the count of Program List.
+    // [UI-thread & (Initialized | Connected)]
     function GetProgramListCount:Int32; winapi;
     // Gets for a given index the Program List Info.
-    function GetProgramListInfo(ListIndex:Int32; var info:TProgramListInfo):tresult; winapi;
+    // [UI-thread & (Initialized | Connected)]
+    function GetProgramListInfo(ListIndex:Int32; var {inout}info:TProgramListInfo):tresult; winapi;
     // Gets for a given program list ID and program index its program name.
-    function GetProgramName(ListID:TProgramListID; ProgramIndex:Int32; {Length=128}name:PChar16):tresult; winapi;
+    // [UI-thread & (Initialized | Connected)]
+    function GetProgramName(ListID:TProgramListID; ProgramIndex:Int32; {Length=128,inout}name:PChar16):tresult; winapi;
     // Gets for a given program list ID, program index and attributeId the associated attribute value.
+    // [UI-thread & (Initialized | Connected)]
     function GetProgramInfo(ListID:TProgramListID; ProgramIndex:Int32; AttributeID:PChar8;
-      {Length=128}AttributeValue:PChar16):tresult; winapi;
+      {Length=128,inout}AttributeValue:PChar16):tresult; winapi;
     // Returns kResultTrue if the given program index of a given program list ID supports PitchNames.
+    // [UI-thread & (Initialized | Connected)]
     function HasProgramPitchNames(ListID:TProgramListID; ProgramIndex:Int32):tresult; winapi;
     // Gets the PitchName for a given program list ID, program index and pitch.
     // If PitchNames are changed the plug-in should inform the host with IUnitHandler::notifyProgramListChange.
+    // [UI-thread & (Initialized | Connected)]
     function GetProgramPitchName(ListID:TProgramListID; ProgramIndex:Int32; MidiPitch:Int16;
-      {Length=128}name:PChar16):tresult; winapi;
+      {Length=128,inout}name:PChar16):tresult; winapi;
     // Gets the current selected unit.
+    // [UI-thread & (Initialized | Connected)]
     function GetSelectedUnit:TUnitID; winapi;
     // Sets a new selected unit.
+    // [UI-thread & (Initialized | Connected)]
     function SelectUnit(UnitID:TUnitID):tresult; winapi;
     // Gets the according unit if there is an unambiguous relation between a channel or a bus and a unit.
     // This method mainly is intended to find out which unit is related to a given MIDI input channel.
+    // [UI-thread & (Initialized | Connected)]
     function GetUnitByBus(&Type:TMediaType; dir:TBusDirection; BusIndex,channel:Int32;
       var UnitID:TUnitID):tresult; winapi;
     // Receives a preset data stream.
@@ -2175,6 +2241,7 @@ type
     //  stream is the program specified by list-Id and program index (first and second parameter)
     // - If the component supports unit data (IUnitData), the destination is the unit specified by the first
     //  parameter - in this case parameter programIndex is < 0).
+    // [UI-thread & (Initialized | Connected)]
     function SetUnitProgramData(ListOrUnitID,ProgramIndex:Int32; data:IBStream):tresult; winapi;
   end;
 
@@ -2187,10 +2254,13 @@ type
   // unit preset data (IUnitData).
   IProgramListData = interface(FUnknown) [GUID_IProgramListData]
     // Returns kResultTrue if the given Program List ID supports Program Data.
+    // [UI-thread & (Initialized | Connected)]
     function ProgramDataSupported(ListID:TProgramListID):tresult; winapi;
     // Gets for a given program list ID and program index the program Data.
-    function GetProgramData(ListID:TProgramListID; ProgramIndex:Int32; data:IBStream):tresult; winapi;
+    // [UI-thread & (Initialized | Connected)]
+    function GetProgramData(ListID:TProgramListID; ProgramIndex:Int32; {inout}data:IBStream):tresult; winapi;
     // Sets for a given program list ID and program index a program Data.
+    // [UI-thread & (Initialized | Connected)]
     function SetProgramData(ListID:TProgramListID; ProgramIndex:Int32; data:IBStream):tresult; winapi;
   end;
 
@@ -2329,16 +2399,20 @@ type
   // to inform the host about it via IComponentHandler::restartComponent (kNoteExpressionChanged).
   INoteExpressionController = interface(FUnknown) [GUID_INoteExpressionController]
     // Returns number of supported note change types for event bus index and channel.
+    // [UI-thread & Connected]
     function GetNoteExpressionCount(BusIndex:Int32; channel:Int16):Int32; winapi;
     // Returns note change type info.
+    // [UI-thread & Connected]
     function GetNoteExpressionInfo(BusIndex:Int32; channel:Int16; NoteExpressionIndex:Int32;
-      var info:TNoteExpressionTypeInfo):tresult; winapi;
+      out info:TNoteExpressionTypeInfo):tresult; winapi;
     // Gets a user readable representation of the normalized note change value.
+    // [UI-thread & Connected]
     function GetNoteExpressionStringByValue(BusIndex:Int32; channel:Int16; TypeID:TNoteExpressionTypeID;
-      {in}ValueNormalized:TNoteExpressionValue; var str:TString128):tresult; winapi;
+      {in}ValueNormalized:TNoteExpressionValue; out str:TString128):tresult; winapi;
     // Converts the user readable representation to the normalized note change value.
+    // [UI-thread & Connected]
     function GetNoteExpressionValueByString(BusIndex:Int32; channel:Int16; TypeID:TNoteExpressionTypeID;
-      {in}str:PWideChar; var ValueNormalized:TNoteExpressionValue):tresult; winapi;
+      {in}str:PWideChar; out ValueNormalized:TNoteExpressionValue):tresult; winapi;
   end;
 
   // KeyswitchTypeID describes the type of a key switch
@@ -2377,9 +2451,11 @@ type
   // create VST Expression Map (allowing to associated symbol to a given articulation / key switch).
   IKeyswitchController = interface(FUnknown) [GUID_IKeyswitchController]
     // Returns number of supported key switches for event bus index and channel.
+    // [UI-thread & Connected]
     function GetKeyswitchCount(BusIndex:Int32; channel:Int16):Int32 winapi;
     // Returns key switch info.
-    function GetKeyswitchInfo(BusIndex:Int32; channel:Int16; KeyswitchIndex:Int32; var info:TKeyswitchInfo):tresult; winapi;
+    // [UI-thread & Connected]
+    function GetKeyswitchInfo(BusIndex:Int32; channel:Int16; KeyswitchIndex:Int32; out info:TKeyswitchInfo):tresult; winapi;
   end;
 
 const
@@ -2501,7 +2577,7 @@ type
     // Returns the count of events.
     function GetEventCount:Int32; winapi;
     // Gets parameter by index.
-    function GetEvent(index:Int32; var e:TEvent):tresult; winapi;
+    function GetEvent(index:Int32; out e:TEvent):tresult; winapi;
     // Adds a new event.
     function AddEvent(const e:TEvent):tresult; winapi;
   end;
@@ -2702,13 +2778,16 @@ type
     //      param outputs pointer to an array of SpeakerArrangement
     //      param numOuts number of SpeakerArrangement in outputs array
     //      Returns kResultTrue when Arrangements is supported and is the current one, else returns kResultFalse.
+    // [UI-thread & (Initialized | Connected | Setup Done)]
     function SetBusArrangements(inputs :PSpeakerArrangement; NumIns :Int32;
                                 outputs:PSpeakerArrangement; NumOuts:Int32):tresult; winapi;
     // Gets the bus arrangement for a given direction (input/output) and index.
     // Note: IComponent::getBusInfo () and IAudioProcessor::getBusArrangement () should be always return the same
     // information about the busses arrangements.
-    function GetBusArrangements(kBusDir:TBusDirection; index:Int32; var arr:TSpeakerArrangement):tresult; winapi;
+    // [UI-thread & (Initialized | Connected | Setup Done | Activated | Processing]
+    function GetBusArrangements(kBusDir:TBusDirection; index:Int32; var {inout}arr:TSpeakerArrangement):tresult; winapi;
     // Asks if a given sample size is supported see SymbolicSampleSizes.
+    // [UI-thread & (Initialized | Connected)]
     function CanProcessSampleSize(SymbolicSampleSize:Int32):tresult; winapi;
     // Gets the current Latency in samples.
     // The returned value defines the group delay or the latency of the plug-in. For example, if the plug-in internally needs
@@ -2717,9 +2796,11 @@ type
     // using IComponentHandler::restartComponent (kLatencyChanged), this could lead to audio playback interruption
     // because the host has to recompute its internal mixer delay compensation.
     // Note that for player live recording this latency should be zero or small.
+    // [UI-thread & Setup Done]
     function GetLatencySamples:UInt32; winapi;
     // Called in disable state (setActive not called with true) before setProcessing is called and processing will begin.
-    function SetupProcessing(var setup:TProcessSetup):tresult; winapi;
+    // [UI-thread & (Initialized | Connected)]
+    function SetupProcessing(const setup:TProcessSetup):tresult; winapi;
     // Informs the plug-in about the processing state. This will be called before any process calls
     // start with true and after with false.
     // Note that setProcessing (false) may be called after setProcessing (true) without any process calls.
@@ -2728,9 +2809,11 @@ type
     // this could be used to reset some buffers (like Delay line or Reverb).
     // The host has to be sure that it is called only when the plug-in is enable
     // (setActive (true) was called).
+    // [(UI-thread or processing-thread) & Activated]
     function SetProcessing(state:TBool):tresult; winapi;
     // The Process call, where all information (parameter changes, event, audio buffer) are passed.
-    function Process(var data:TProcessData):tresult; winapi;
+    // [processing-thread & Processing]
+    function Process(const data:TProcessData):tresult; winapi;
     // Gets tail size in samples. For example, if the plug-in is a Reverb plug-in and it knows that
     // the maximum length of the Reverb is 2sec, then it has to return in getTailSamples()
     // (in VST2 it was getGetTailSize ()): 2*sampleRate.
@@ -2740,6 +2823,7 @@ type
     //  - kNoTail when no tail
     //  - x * sampleRate when x Sec tail.
     //  - kInfiniteTail when infinite tail.
+    // [UI-thread & Setup Done]
     function GetTailSamples:UInt32; winapi;
   end;
 
@@ -2761,6 +2845,7 @@ type
   // of the previous plug-ins.
   IAudioPresentationLatency = interface(FUnknown) [GUID_IAudioPresentationLatency]
     // Informs the plug-in about the Audio Presentation Latency in samples for a given direction (kInput/kOutput) and bus index.
+    // [UI-thread & Activated]
     function SetAudioPresentationLatencySamples(kBusDir:TBusDirection; BusIndex:Int32; LatencyInSamples:UInt32):tresult; winapi;
   end;
 
@@ -2792,6 +2877,8 @@ type
   // Plug-Ins built with an earlier SDK version (< 3.7) will still get the old information, but the information
   // may not be as accurate as when using this interface.
   IProcessContextRequirements = interface(FUnknown) [GUID_IProcessContextRequirements]
+    // Allows the host to ask the plug-in what is really needed for the process context information (Vst::ProcessContext).
+    // [UI-thread & Setup Done]
     function GetProcessContextRequirements:UInt32; winapi;
   end;
 
@@ -2951,20 +3038,20 @@ type
     // Sets integer value
     function SetInt(id:TAttrID; value:Int64):tresult; winapi;
     // Gets integer value.
-    function GetInt(id:TAttrID; var value:Int64):tresult; winapi;
+    function GetInt(id:TAttrID; out value:Int64):tresult; winapi;
     // Sets float value
     function SetFloat(id:TAttrID; value:Double):tresult; winapi;
     // Gets float value.
-    function GetFloat(id:TAttrID; var value:Double):tresult; winapi;
+    function GetFloat(id:TAttrID; out value:Double):tresult; winapi;
     // Sets string value (UTF16) (should be null-terminated!).
     function SetString(id:TAttrID; str:PChar16):tresult; winapi;
     // Gets string value (UTF16). Note that Size is in Byte, not the string Length!
     // Do not forget to multiply the length by sizeof (TChar)!
-    function GetString(id:TAttrID; str:PChar16; SizeInBytes:UInt32):tresult; winapi;
+    function GetString(id:TAttrID; {out}str:PChar16; SizeInBytes:UInt32):tresult; winapi;
     // Sets binary data.
     function SetBinary(id:TAttrID; data:Pointer; SizeInBytes:UInt32):tresult; winapi;
     // Gets binary data.
-    function GetBinary(id:TAttrID; var data:Pointer; var SizeInBytes:UInt32):tresult; winapi;
+    function GetBinary(id:TAttrID; out data:Pointer; var SizeInBytes:UInt32):tresult; winapi;
   end;
 
   // Meta attributes of a stream: Vst::IStreamAttributes
@@ -2977,7 +3064,7 @@ type
   // or used to get the full file path of the loaded preset (if available).
   IStreamAttributes = interface(FUnknown) [GUID_IStreamAttributes]
     // Gets filename (without file extension) of the stream.
-    function GetFileName({Length=128}name:PChar16):tresult; winapi;
+    function GetFileName({Length=128,inout}name:PChar16):tresult; winapi;
     // Gets meta information list.
     function GetAttributes:IAttributeList {$ifdef DCC}unsafe{$endif}; winapi;
   end;
@@ -3007,10 +3094,13 @@ type
   // so that they are not directly connected.
   IConnectionPoint = interface(FUnknown) [GUID_IConnectionPoint]
     // Connects this instance with another connection point.
+    // [UI-thread & Initialized]
     function Connect(other:IConnectionPoint):tresult; winapi;
     // Disconnects a given connection point from this.
+    // [UI-thread & Connected]
     function Disconnect(other:IConnectionPoint):tresult; winapi;
     // Called when a message has been sent from the connection point to this.
+    // [UI-thread & Connected]
     function Notify(message:IMessage):tresult; winapi;
   end;
 
@@ -3059,7 +3149,7 @@ type
   // to inform the host about it via IComponentHandler::restartComponent (kNoteExpressionChanged).
   INoteExpressionPhysicalUIMapping = interface(FUnknown) [GUID_INoteExpressionPhysicalUIMapping]
     // Fills the list of mapped [physical UI (in) - note expression (out)] for a given bus index and channel.
-    function GetPhysicalUIMapping(BusIndex:Int32; Channel:Int16; var list:TPhysicalUIMapList):tresult; winapi;
+    function GetPhysicalUIMapping(BusIndex:Int32; Channel:Int16; var {inout}list:TPhysicalUIMapList):tresult; winapi;
   end;
 
 type
@@ -3084,6 +3174,7 @@ type
   IPrefetchableSupport = interface(FUnknown) [GUID_IPrefetchableSupport]
     // retrieve the current prefetch support. Use IComponentHandler::restartComponent
     // (kPrefetchableSupportChanged) to inform the host that this support has changed.
+    // [UI-thread & (Initialized | Connected | Setup Done | Activated | Processing)]
     function GetPrefetchableSupport(var prefetchable:TPrefetchableSupport):tresult; winapi;
   end;
 
@@ -3097,6 +3188,7 @@ type
   // For example, all Steinberg hosts require this interface in order to support the "AI Knob".
   IParameterFinder = interface(FUnknown) [GUID_IParameterFinder]
     // Find out which parameter in plug-in view is at given position (relative to plug-in view).
+    // [UI-thread & (Initialized | Connected) & plugView]
     function FindParameter(xpos,ypos:Int32; var ResultTag:TParamID):tresult; winapi;
   end;
 
@@ -3134,7 +3226,8 @@ type
   // This representation is implemented as XML text following the Document Type Definition (DTD): http://dtd.steinberg.net/VST-Remote-1.1.dtd
   IXmlRepresentationController = interface(FUnknown) [GUID_IXmlRepresentationController]
     // Retrieves a stream containing a XmlRepresentation for a wanted representation info
-    function GetXmlRepresentationStream({in}const info:TRepresentationInfo; {out}stream:IBStream):tresult; winapi;
+    // [UI-thread & Initialized]
+    function GetXmlRepresentationStream({in}const info:TRepresentationInfo; {inout}stream:IBStream):tresult; winapi;
   end;
 
   // Basic host callback interface: Vst::IHostApplication
@@ -3145,8 +3238,10 @@ type
   // Basic VST host application interface.
   IHostApplication = interface(FUnknown) [GUID_IHostApplication]
     // Gets host application name.
+    // [UI-thread & Initialized]
     function GetName({Length=128}name:PChar16):tresult; winapi;
     // Creates host object (e.g. Vst::IMessage).
+    // [UI-thread & Initialized]
     function CreateInstance(const cid:TGuid; const iid:TGuid; out obj):tresult; winapi;
   end;
 
@@ -3221,6 +3316,7 @@ type
   // Hosts can inform the plug-in about its current automation state (Read/Write/Nothing).
   IAutomationState = interface(FUnknown) [GUID_IAutomationState]
     // Sets the current Automation state.
+    // [UI-thread & Connected]
     function SetAutomationState(state:TAutomationState):tresult; winapi;
   end;
 
@@ -3236,6 +3332,7 @@ type
   // Use this if you want to implement custom MIDI-Learn functionality in your plug-in.
   IMidiLearn = interface(FUnknown) [GUID_IMidiLearn]
     // Called on live input MIDI-CC change associated to a given bus index and MIDI channel
+    // [UI-thread & (Initialized | Connected)]
     function OnLiveMIDIControllerInput(BusIndex:Int32; Channel:Int16; MidiCC:TCtrlNumber):tresult; winapi;
   end;
 
@@ -3251,7 +3348,7 @@ type
   IParameterFunctionName = interface(FUnknown) [GUID_IParameterFunctionName]
     // Gets for the given unitID the associated paramID to a function Name.
     // Returns kResultFalse when no found parameter (paramID is set to kNoParamId in this case).
-    function GetParameterIDFromFunctionName(UnitID:TUnitID; FuncName:FIDString; var ParamID:TParamID):tresult; winapi;
+    function GetParameterIDFromFunctionName(UnitID:TUnitID; FuncName:FIDString; var {inout}ParamID:TParamID):tresult; winapi;
   end;
 
   // Host callback interface for an edit controller: Vst::IPlugInterfaceSupport
@@ -3369,8 +3466,75 @@ type
     // return kResultTrue if a compatible parameter is available (newParamID has the appropriate
     // value, it could be the same than oldParamID), or kResultFalse if no compatible parameter is
     // available (newParamID is undefined)
+    // [UI-thread & Initialized]
     function GetCompatibleParamID(const {in}PluginToReplaceUID:TGuid; {in}OldParamID:TParamID; out NewParamID:TParamID):tresult; winapi;
   end;
+
+const
+
+  // Keys used as AttrID (Attribute ID) in the return IAttributeList of IInfoListener::setChannelContextInfos
+  kChannelUIDKey = 'channel uid';
+
+  // integer (int64) [optional]: number of characters in kChannelUIDKey
+  kChannelUIDLengthKey = 'channel uid length';
+
+  // integer (int64) [optional]: runtime id to identify a channel (may change when reloading project)
+  kChannelRuntimeIDKey = 'channel runtime id';
+
+  // string (TChar) [optional]: name of the channel like displayed in the mixer
+  kChannelNameKey = 'channel name';
+
+  // integer (int64) [optional]: number of characters in kChannelNameKey
+  kChannelNameLengthKey = 'channel name length';
+
+  // color (ColorSpec) [optional]: used color for the channel in mixer or track
+  // uint32, format is ARGB
+  kChannelColorKey = 'channel color';
+
+  // integer (int64) [optional]: index of the channel in a channel index namespace, start with 1 not 0!
+  kChannelIndexKey = 'channel index';
+
+  // integer (int64) [optional]: define the order of the current used index namespace, start with 1 not 0!
+  // For example:
+  // index namespace is "Input"   -> order 1,
+  // index namespace is "Channel" -> order 2,
+  // index namespace is "Output"  -> order 3
+  kChannelIndexNamespaceOrderKey = 'channel index namespace order';
+
+  // string (TChar) [optional]: name of the channel index namespace
+  // for example "Input", "Output","Channel", ...
+  kChannelIndexNamespaceKey = 'channel index namespace';
+
+  // integer (int64) [optional]: number of characters in kChannelIndexNamespaceKey
+  kChannelIndexNamespaceLengthKey = 'channel index namespace length';
+
+  // PNG image representation as binary [optional]
+  kChannelImageKey = 'channel image';
+
+  // integer (int64) [optional]: routing position of the plug-in in the channel
+  kChannelPluginLocationKey = 'channel plugin location';
+  kPreVolumeFader = 0;
+  kPostVolumeFader = 1;
+  kUsedAsPanner = 2;
+
+type
+  // - [plug imp]
+  // - [extends IEditController]
+  // - [released: 3.6.5]
+  // - [optional]
+  //
+  // Allows the host to inform the plug-in about the context in which the plug-in is instantiated,
+  // mainly channel based info (color, name, index,...). Index can be defined inside a namespace
+  // (for example, index start from 1 to N for Type Input/Output Channel (Index namespace) and index
+  // start from 1 to M for Type Audio Channel).
+  // As soon as the plug-in provides this IInfoListener interface, the host will call setChannelContextInfos
+  // for each change occurring to this channel (new name, new color, new indexation,...)
+  IInfoListener = interface(FUnknown) [GUID_IInfoListener]
+    // Receive the channel context infos from host.
+    // [UI-thread & (Initialized | Connected | Setup Done | Activated | Processing)]
+    function SetChannelContextInfos(list:IAttributeList):tresult; winapi;
+  end;
+
 
 {$ifdef FPC} {$pop} {$else} {$A+} {$endif}
 
@@ -3582,6 +3746,7 @@ type
   public const
     kProject = 'Project'; // the state is restored from a project loading or it is saved in a project
     kDefault = 'Default'; // the state is restored from a preset (marked as default) or the host wants to store a default state of the plug-in
+    kTrackPreset = 'TrackPreset'; // the state is restored from a track preset
   end;
 
   // Predefined Musical Instrument

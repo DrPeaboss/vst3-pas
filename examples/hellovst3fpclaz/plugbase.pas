@@ -67,9 +67,9 @@ type
       var arr:TSpeakerArrangement):tresult; virtual; winapi;
     function CanProcessSampleSize(SymbolicSampleSize:Int32):tresult; virtual; winapi;
     function GetLatencySamples:UInt32; virtual; winapi;
-    function SetupProcessing(var setup:TProcessSetup):tresult; virtual; winapi;
+    function SetupProcessing(const setup:TProcessSetup):tresult; virtual; winapi;
     function SetProcessing(state:TBool):tresult; virtual; winapi;
-    function Process(var data:TProcessData):tresult; virtual; winapi;
+    function Process(const data:TProcessData):tresult; virtual; winapi;
     function GetTailSamples:UInt32; virtual; winapi;
   end;
 
@@ -85,10 +85,10 @@ type
     function SetState(state:IBStream):tresult; virtual; winapi;
     function GetState(state:IBStream):tresult; virtual; winapi;
     function GetParameterCount:Int32; virtual; winapi;
-    function GetParameterInfo(ParamIndex:Int32; var info:TParameterInfo):tresult; virtual; winapi;
+    function GetParameterInfo(ParamIndex:Int32; out info:TParameterInfo):tresult; virtual; winapi;
     function GetParamStringByValue(id:TParamID; ValueNormalized:TParamValue; str:PChar16):tresult; virtual; winapi;
     function GetParamValueByString(id:TParamID; str:PWideChar;
-      var ValueNormalized:TParamValue):tresult; virtual; winapi;
+      out ValueNormalized:TParamValue):tresult; virtual; winapi;
     function NormalizedParamToPlain(id:TParamID; ValueNormalized:TParamValue):TParamValue; virtual; winapi;
     function PlainParamToNormalized(id:TParamID; PlainValue:TParamValue):TParamValue; virtual; winapi;
     function GetParamNormalized(id:TParamID):TParamValue; virtual; winapi;
@@ -244,7 +244,7 @@ begin
   Result:=0;
 end;
 
-function TVAudioProcessor.SetupProcessing(var setup:TProcessSetup):tresult; winapi;
+function TVAudioProcessor.SetupProcessing(const setup:TProcessSetup):tresult; winapi;
 begin
   if CanProcessSampleSize(setup.SymbolicSampleSize)<>kResultOk then // check
     Exit(kResultFalse);
@@ -260,7 +260,7 @@ begin
   Result:=kNotImplemented;
 end;
 
-function TVAudioProcessor.Process(var data:TProcessData):tresult; winapi;
+function TVAudioProcessor.Process(const data:TProcessData):tresult; winapi;
 begin
   Result:=kNotImplemented;
 end;
@@ -307,7 +307,7 @@ begin
   Result:=0;
 end;
 
-function TVEditController.GetParameterInfo(ParamIndex:Int32; var info:TParameterInfo):tresult; winapi;
+function TVEditController.GetParameterInfo(ParamIndex:Int32; out info:TParameterInfo):tresult; winapi;
 begin
   Result:=kNotImplemented;
 end;
@@ -319,7 +319,7 @@ begin
 end;
 
 function TVEditController.GetParamValueByString(id:TParamID; str:PWideChar;
-  var ValueNormalized:TParamValue):tresult; winapi;
+  out ValueNormalized:TParamValue):tresult; winapi;
 begin
   Result:=kNotImplemented;
 end;
