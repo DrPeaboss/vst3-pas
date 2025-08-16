@@ -2,7 +2,7 @@
   The Object Pascal(FPC and Delphi) bindings of VST 3 API.
   Original API is at <https://github.com/steinbergmedia/vst3_pluginterfaces>
 
-  Current API version is 3.7.12 (2024/07/23).
+  Current API version is 3.7.14 (2025/06/23).
 
   This unit is converted from part of VST 3 API,
   constains the main constants, data structures and interfaces.
@@ -27,8 +27,6 @@ unit VST3Intf;
 {$endif}
 
 interface
-
-uses Math;
 
 { Delphi Compatibility }
 
@@ -3471,7 +3469,6 @@ type
   end;
 
 const
-
   // Keys used as AttrID (Attribute ID) in the return IAttributeList of IInfoListener::setChannelContextInfos
   kChannelUIDKey = 'channel uid';
 
@@ -3522,7 +3519,6 @@ type
   // - [extends IEditController]
   // - [released: 3.6.5]
   // - [optional]
-  //
   // Allows the host to inform the plug-in about the context in which the plug-in is instantiated,
   // mainly channel based info (color, name, index,...). Index can be defined inside a namespace
   // (for example, index start from 1 to N for Type Input/Output Channel (Index namespace) and index
@@ -3723,6 +3719,7 @@ const
   IID_IInterAppAudioPresetManager:TGuid = GUID_IInterAppAudioPresetManager;
   IID_IPluginCompatibility:TGuid = GUID_IPluginCompatibility;
   IID_IRemapParamID:TGuid = GUID_IRemapParamID;
+  IID_IInfoListener:TGuid = GUID_IInfoListener;
 
 type
   // Predefined Preset Attributes
