@@ -1,20 +1,39 @@
 {-------------------------------------------------------------------------------
   The Object Pascal(FPC and Delphi) bindings of VST 3 API.
   Original API is at <https://github.com/steinbergmedia/vst3_pluginterfaces>
+  The full SDK is at <https://github.com/steinbergmedia/vst3sdk>
 
-  Current API version is 3.7.14 (2025/06/23).
+  Current API version is 3.8.0 (2025/10/20).
 
   This unit is converted from part of VST 3 API,
   constains the main constants, data structures and interfaces.
   This unit is alpha version and has not fully tested!
 
-  Remember, this is not a distribution of VST SDK.
-  You can find the full SDK at <https://github.com/steinbergmedia/vst3sdk>
-  If you want to use this unit in your projects, please abide by GPLv3 license.
-  License at <https://www.gnu.org/licenses/gpl-3.0.html>
-
   VST is a trademark of Steinberg Media Technologies GmbH,
   registered in Europe and other countries.
+
+  The MIT License
+
+  Copyright (c) 2025 PeaZomboss
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+
 -------------------------------------------------------------------------------}
 
 unit VST3Intf;
@@ -40,17 +59,18 @@ type
 { VST Versions }
 
 const
-  kVstVersionString = 'VST 3.7.14'; // SDK version for TPClassInfo2
+  kVstVersionString = 'VST 3.8.0'; // SDK version for TPClassInfo2
 
   kVstVersionMajor  = 3;
-  kVstVersionMinor  = 7;
-  kVstVersionSub    = 14;
+  kVstVersionMinor  = 8;
+  kVstVersionSub    = 0;
 
   VST_VERSION = kVstVersionMajor shl 16 or kVstVersionMinor shl 8 or kVstVersionSub;
 
   // Versions History which allows to write such code:
   // {$IF VST_VERSION >= VST_3_6_5_VERSION}
 
+  VST_3_8_0_VERSION  = $030800;
   VST_3_7_14_VERSION = $03070E;
   VST_3_7_13_VERSION = $03070D;
   VST_3_7_12_VERSION = $03070C;
@@ -86,6 +106,7 @@ const
   SDKVersionMinor   = kVstVersionMinor;
   SDKVersionSub     = kVstVersionSub;
   SDKVersion        = VST_VERSION;
+  SDKVersion_3_8_0  = VST_3_8_0_VERSION;
   SDKVersion_3_7_14 = VST_3_7_14_VERSION;
   SDKVersion_3_7_13 = VST_3_7_13_VERSION;
   SDKVersion_3_7_12 = VST_3_7_12_VERSION;
@@ -205,12 +226,12 @@ const
   GUID_ICloneable = '{D45406B9-3A2D-4443-9DAD-9BA985A1454B}';
   GUID_IPlugFrame = '{01AF7F36-9346-A9AF-8D4D-A2A0ED0882A3}';
   GUID_IPlugView = '{0725C35B-EA49-60D0-A615-1B522B755B29}';
-{$IFDEF LINUX}
   GUID_IEventHandler = '{C9651E56-6F49-A013-813A-2C35654D7983}';
   GUID_ITimerHandler = '{4FD9BD10-7447-4241-821F-AD8FECA72CA9}';
   GUID_IRunLoop = '{6653C318-1A4F-7697-9C5B-83857A871389}';
-{$ENDIF}
   GUID_IPlugViewContentScaleSupport = '{65ED9690-8AC4-4525-8AAD-EF7A72EA703F}';
+  GUID_IWaylandHost = '{5E9582EE-8659-4652-B213-678E7F1A705E}';
+  GUID_IWaylandFrame = '{809FAEC6-231C-4FFA-98ED-046C6E9E2003}';
   GUID_IAttributeList = '{1E5F0AEB-CC7F-4533-A254-401138AD5EE4}';
   GUID_IStreamAttributes = '{D6CE2FFC-EFAF-4B8C-9E74-F1BB12DA44B4}';
   GUID_IUnitHandler = '{4B5147F8-4654-486B-8DAB-30BA163A3C56}';
@@ -231,6 +252,8 @@ const
   GUID_IMidiMapping = '{DF0FF9F7-49B7-4669-B63A-B7327ADBF5E5}';
   GUID_IEditControllerHostEditing = '{C1271208-7059-4098-B9DD-34B36BB0195E}';
   GUID_IComponentHandlerSystemTime = '{F9E53056-D155-4CD5-B769-5E1B7B0F7745}';
+  GUID_IMidiMapping2 = '{6DE14B88-03F9-4F09-A255-2F0F9326593E}';
+  GUID_IMidiLearn2 = '{F07E498A-7886-4327-8B43-1CEDA3C553FC}';
   GUID_IParamValueQueue = '{01263A18-ED07-4F6F-98C9-D3564686F9BA}';
   GUID_IParameterChanges = '{A4779663-0BB6-4A56-B443-84A8466FEB9D}';
   GUID_INoteExpressionController = '{B7F8F859-4123-4872-9116-95814F3721A3}';
@@ -1319,6 +1342,17 @@ const
   kCtrlPolyPressure = 131;
   kCtrlQuarterFrame = 132;  // Quarter Frame ((use LegacyMIDICCOutEvent.value only)
 
+  kSystemSongSelect        = 133; // Song Select (use LegacyMIDICCOutEvent.value only)
+  // Song Pointer (use LegacyMIDICCOutEvent.value for LSB and
+  // LegacyMIDICCOutEvent.value2 for MSB)
+  kSystemSongPointer       = 134;
+  kSystemCableSelect       = 135; // Cable Select (use LegacyMIDICCOutEvent.value only)
+  kSystemTuneRequest       = 136; // Tune Request (use LegacyMIDICCOutEvent.value only)
+  kSystemMidiClockStart    = 137; // Midi Clock Start (use LegacyMIDICCOutEvent.value only)
+  kSystemMidiClockContinue = 138; // Midi Clock Continue (use LegacyMIDICCOutEvent.value only)
+  kSystemMidiClockStop     = 139; // Midi Clock Stop (use LegacyMIDICCOutEvent.value only)
+  kSystemActiveSensing     = 140; // Active Sensing (use LegacyMIDICCOutEvent.value only)
+
 type
   PViewRect = ^TViewRect;
   { TViewRect }
@@ -1449,7 +1483,6 @@ type
     function ResizeView(view:IPlugView;NewSize:PViewRect):tresult; winapi;
   end;
 
-{$ifdef linux}
   TimerInterval  = UInt64;
   FileDescriptor = Integer;
 
@@ -1485,7 +1518,6 @@ type
     function RegisterTimer(handler:ITimerHandler; milliseconds:TimerInterval):TResult; winapi;
     function UnregisterTimer(handler:ITimerHandler):TResult; winapi;
   end;
-{$endif linux}
 
 type
   TScaleFactor = Single;
@@ -1516,6 +1548,85 @@ type
     // return kResultTrue when a plug-in handles this
     // [UI-thread]
     function SetContentScaleFactor(Factor:TScaleFactor):tresult; winapi;
+  end;
+
+  (*
+  * The following interfaces allow querying information about the host plug-in frame when running in
+  * a Wayland session.
+  *
+  * A native Wayland host application acts as both a Wayland client and a Wayland compositor.
+  * The host application connects to the system compositor and creates application windows etc. using
+  * this compositor connection.
+  * A plug-in does not connect to the system compositor, but connects to the host application by
+  * calling IWaylandHost::openWaylandConnection().
+  * The IWaylandHost interface can be created via IHostApplication::createInstance. As the interface
+  * may be required early, the host should pass IHostApplication to the plug-in using
+  * IPluginFactory3::setHostContext.
+  * When opening a plug-in window, the host calls IPlugView::attached() with the parent pointer set
+  * to the wl_surface of the parent frame (with an unknown surface role).
+  * The plug-in creates a wl_surface and must assign the wl_subsurface role using the given parent
+  * pointer.
+  * The plug-in is responsible for resizing the subsurface accordingly.
+  * In order to create additional windows (dialogs, menus, tooltips etc.), the plug-in can use the
+  * IWaylandFrame interface, which is implemented by the host's IPlugFrame object.
+  * The plug-in can use IWaylandFrame::getParentSurface() to query an xdg_surface, which can in turn
+  * be used as a parent in xdg_surface_get_popup. Likewise, the plug-in can use
+  * IWaylandFrame::getParentToplevel() to query an xdg_toplevel, which can be used in
+  * xdg_toplevel_set_parent.
+  *)
+
+  wl_display = record end;
+  pwl_display = ^wl_display;
+  wl_surface = record end;
+  pwl_surface = ^wl_surface;
+  xdg_surface = record end;
+  pxdg_surface = ^xdg_surface;
+  xdg_toplevel = record end;
+  pxdg_toplevel = ^xdg_toplevel;
+
+  (*
+  IWaylandHost: Wayland host interface
+  Implemented as a singleton in the host application.
+  Created via IHostApplication::createInstance.
+  - [host imp]
+  - [released: 3.8.0]
+  *)
+  IWaylandHost = interface(FUnknown) [GUID_IWaylandHost]
+    (** Open a Wayland connection to the host.
+     * [UI-thread & Initialized] *)
+    function OpenWaylandConnection:pwl_display; winapi;
+
+    (** Close a previously created connection.
+     * [UI-thread & Initialized] *)
+    function CloseWaylandConnection(display:pwl_display):tresult; winapi;
+  end;
+
+  (** IWaylandFrame interface
+  Interface to query additional information about the host plug-in frame in a Wayland session.
+  To be implemented by the VST3 IPlugFrame class.
+  - [host imp]
+  - [released: 3.8.0]
+  *)
+  IWaylandFrame = interface(FUnknown) [GUID_IWaylandFrame]
+    (** Get the parent Wayland surface.
+     * The plug-in must not change the state of the parent surface.
+     * [UI-thread & plugView] *)
+    function GetWaylandSurface(display: pwl_display):pwl_surface; winapi;
+
+    (** Get the parent XDG surface for creating popup windows.
+     * If the parent surface is not an xdg_surface,
+     *   this returns the first xdg_surface that can be found in the surface hierarchy,
+     *   starting the search with the parent surface.
+     * The plug-in must not change the state of the parent surface.
+     * The size and position of the parent surface, relative to the top left corner of
+     *   the plug-in surface, is returned in parentSize.
+     * [UI-thread & plugView] *)
+    function GetParentSurface(out ParentSize: TViewRect; display: pwl_display):pxdg_surface; winapi;
+
+    (** Get the XDG toplevel surface containing the plug-in frame.
+     * The plug-in must not change the state of the returned xdg_toplevel.
+     * [UI-thread & plugView] *)
+    function GetParentToplevel(display: pwl_display):pxdg_surface; winapi;
   end;
 
 // Pack records
@@ -2078,6 +2189,120 @@ type
     function GetSystemTime(out SysTime:Int64):tresult; winapi;
   end;
 
+  TMidiGroup = UInt8;
+  TMidiChannel = UInt8;
+  TBusIndex = Int32;
+
+  TMidi2Controller = packed record
+    Bank: 0..127; // msb
+    Registered: Boolean; // true: registered, false: assignable
+    Index: 0..127; // lsb
+    Reserved: Boolean;
+  end;
+
+  TMidi2ControllerParamIDAssignment = record
+    PId: TParamID;
+    BusIndex: TBusIndex;
+    Channel: TMidiChannel;
+    Controller: TMidi2Controller;
+  end;
+  PMidi2ControllerParamIDAssignment = ^TMidi2ControllerParamIDAssignment;
+
+  TMidi2ControllerParamIDAssignmentList = record
+    Count: UInt32;
+    Map: PMidi2ControllerParamIDAssignment;
+  end;
+
+  TMidi1ControllerParamIDAssignment = record
+    PId: TParamID;
+    BusIndex: TBusIndex;
+    Channel: TMidiChannel;
+    Controller: TCtrlNumber;
+  end;
+  PMidi1ControllerParamIDAssignment = ^TMidi1ControllerParamIDAssignment;
+
+  TMidi1ControllerParamIDAssignmentList = record
+    Count: UInt32;
+    Map: PMidi1ControllerParamIDAssignment;
+  end;
+
+  (** MIDI Mapping interface: Vst::IMidiMapping2
+
+  - [plug imp]
+  - [extends IEditController]
+  - [released: 3.8.0]
+  - [optional]
+  - [replaces Vst::IMidiMapping]
+
+  This interface replaces Vst::IMidiMapping to support the extended MIDI controllers in MIDI 2.0.
+
+  A MIDI 2.0 capable host first queries for the Vst::IMidiMapping2 interface and uses the old
+  Vst::IMidiMapping interface as a fallback.
+
+  A plug-in can use the Vst::IPlugInterfaceSupport to check if the host supports Vst::IMidiMapping2.
+  *)
+  IMidiMapping2 = interface(FUnknown) [GUID_IMidiMapping2]
+    (** Gets the number of MIDI 2.0 controller to parameter assignments
+     *
+     *  @param direction    input/output direction
+     *  @return             number of MIDI 2.0 controller to parameter assignments
+     *  [UI-thread & Connected] *)
+    function GetNumMidi2ControllerAssignments(direction:TBusDirection):UInt32; winapi;
+
+    (** Gets MIDI 2.0 controller parameter assignments
+     *
+     *  the list is preallocated by the host and must be filled by the plug-in
+     *
+     *  @param direction    input/output direction
+     *  @param list         list of assignments
+     *  @return             kResultTrue on success
+     *  [UI-thread & Connected] *)
+    function GetMidi2ControllerAssignments(direction:TBusDirection;
+      const list: TMidi2ControllerParamIDAssignmentList): tresult; winapi;
+
+    (** Gets the number of MIDI 1.0 controller to parameter assignments
+     *
+     *  @param direction    input/output direction
+     *  @return             number of MIDI 1.0 controller to parameter assignments
+     *  [UI-thread & Connected] *)
+    function GetNumMidi1ControllerAssignments(direction:TBusDirection):UInt32; winapi;
+
+    (** Gets MIDI 1.0 controller parameter assignments
+     *
+     *  the list is preallocated by the host and must be filled by the plug-in
+     *
+     *  @param direction    input/output direction
+     *  @param list         list of assignments
+     *  @return             kResultTrue on success
+     *  [UI-thread & Connected] *)
+    function GetMidi1ControllerAssignments(direction:TBusDirection;
+      const list: TMidi1ControllerParamIDAssignmentList): tresult; winapi;
+  end;
+
+  (** MIDI Learn interface: Vst::IMidiLearn2
+
+  - [plug imp]
+  - [extends IEditController]
+  - [released: 3.8.0]
+  - [optional]
+  - [replaces Vst::IMidiLearn]
+
+  If this interface is implemented by the edit controller, the host will call this method whenever
+  there is live MIDI-CC input for the plug-in. This way, the plug-in can change its MIDI-CC parameter
+  mapping and notify the host using IComponentHandler::restartComponent with the
+  kMidiCCAssignmentChanged flag.
+  Use this if you want to implement custom MIDI-Learn functionality in your plug-in.
+  *)
+  IMidiLearn2 = interface(FUnknown) [GUID_IMidiLearn2]
+    (** Called on live input MIDI 2.0-CC change associated to a given bus index and MIDI channel
+     * [UI-thread & (Initialized | Connected)] *)
+    function OnLiveMidi2ControllerInput(index:TBusIndex; channel:TMidiChannel; MidiCC:TMidi2Controller):tresult; winapi;
+
+    (** Called on live input MIDI 1.0-CC change associated to a given bus index and MIDI channel
+     * [UI-thread & (Initialized | Connected)] *)
+    function OnLiveMidi1ControllerInput(index:TBusIndex; channel:TMidiChannel; MidiCC:TCtrlNumber):tresult; winapi;
+  end;
+
   // Queue of changes for a specific parameter: Vst::IParamValueQueue
   // - [host imp]
   // - [released: 3.0.0]
@@ -2339,6 +2564,16 @@ type
     Value:TNoteExpressionValue; // normalized value [0.0, 1.0].
   end;
 
+  (** Note Expression Int event. Used in Event (union)
+  Same as NoteExpressionValueEvent but use a uint64 instead of a NoteExpressionValue (double)
+  - [released: 3.8.0]
+  *)
+  TNoteExpressionIntValueEvent = record
+    TypeID:TNoteExpressionTypeID;
+    NoteID:Int32;
+    Value:UInt64;
+  end;
+
   // Note Expression Text event. Used in Event (union)
   // A Expression event affects one single playing note.
   TNoteExpressionTextEvent = record
@@ -2540,8 +2775,8 @@ const
   kNoteExpressionTextEvent = 5;  // is NoteExpressionTextEvent
   kChordEvent = 6; // is ChordEvent
   kScaleEvent = 7; // is ScaleEvent
+  kNoteExpressionIntValueEvent = 8; //  is NoteExpressionIntValueEvent
   kLegacyMIDICCOutEvent = 65535;
-
   kIsLive = 1 shl 0; // indicates that the event is played live (directly from keyboard)
   kUserReserved1 = 1 shl 14; // reserved for user (for internal use)
   kUserReserved2 = 1 shl 15; // reserved for user (for internal use)
@@ -2564,6 +2799,7 @@ type
       6:(Chord:TChordEvent); // type == kChordEvent
       7:(Scale:TScaleEvent); // type == kScaleEvent
       8:(MidiCCOut:TLegacyMIDICCOutEvent); // type == kLegacyMIDICCOutEvent
+      9:(NoteExpressionIntValue:TNoteExpressionIntValueEvent); // type == kNoteExpressionIntValueEvent
   end;
 
   // List of events to process: Vst::IEventList
@@ -3325,7 +3561,7 @@ type
   // - [optional]
   // If this interface is implemented by the edit controller, the host will call this method whenever
   // there is live MIDI-CC input for the plug-in. This way, the plug-in can change its MIDI-CC parameter
-  // mapping and inform the host via the IComponentHandler::restartComponent with the
+  // mapping and notify the host using the IComponentHandler::restartComponent with the
   // kMidiCCAssignmentChanged flag.
   // Use this if you want to implement custom MIDI-Learn functionality in your plug-in.
   IMidiLearn = interface(FUnknown) [GUID_IMidiLearn]
@@ -3663,12 +3899,12 @@ const
   IID_ICloneable:TGuid = GUID_ICloneable;
   IID_IPlugFrame:TGuid = GUID_IPlugFrame;
   IID_IPlugView:TGuid = GUID_IPlugView;
-{$ifdef LINUX}
   IID_IEventHandler:TGuid = GUID_IEventHandler;
   IID_ITimerHandler:TGuid = GUID_ITimerHandler;
   IID_IRunLoop:TGuid = GUID_IRunLoop;
-{$endif}
   IID_IPlugViewContentScaleSupport:TGuid = GUID_IPlugViewContentScaleSupport;
+  IID_IWaylandHost:TGuid = GUID_IWaylandHost;
+  IID_IWaylandFrame:TGuid = GUID_IWaylandFrame;
   IID_IAttributeList:TGuid = GUID_IAttributeList;
   IID_IStreamAttributes:TGuid = GUID_IStreamAttributes;
   IID_IUnitHandler:TGuid = GUID_IUnitHandler;
@@ -3689,6 +3925,8 @@ const
   IID_IMidiMapping:TGuid = GUID_IMidiMapping;
   IID_IEditControllerHostEditing:TGuid = GUID_IEditControllerHostEditing;
   IID_IComponentHandlerSystemTime:TGuid = GUID_IComponentHandlerSystemTime;
+  IID_IMidiMapping2:TGuid = GUID_IMidiMapping2;
+  IID_IMidiLearn2:TGuid = GUID_IMidiLearn2;
   IID_IParamValueQueue:TGuid = GUID_IParamValueQueue;
   IID_IParameterChanges:TGuid = GUID_IParameterChanges;
   IID_INoteExpressionController:TGuid = GUID_INoteExpressionController;

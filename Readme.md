@@ -1,6 +1,6 @@
 # vst3-pas
 
-The Object Pascal(FPC and Delphi) bindings of VST 3 API. Current version is 3.7.14 (2025/06/23).
+The Object Pascal(FPC and Delphi) bindings of VST 3 API. Current version is 3.8.0 (2025/10/20).
 
 Original API is at <https://github.com/steinbergmedia/vst3_pluginterfaces>
 
@@ -36,4 +36,4 @@ In theory, FPC and Lazarus versions can easily support Linux and macOS with some
 
 ## License
 
-The original VST 3 SDK has a dual license, as a port of VST 3 API, it is licensed under GPLv3.
+MIT License
